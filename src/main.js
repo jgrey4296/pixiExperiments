@@ -30,13 +30,28 @@ require(['pixi','./src/jgSpriteSheetProcessor'],function(PIXI,SheetProcessor){
             setupScene();
         });
 
+
+
+
+    //Setup Function, called after assets are loaded
     var setupScene = function(){
         var sprite = new PIXI.Sprite(frames[49]);
         container.addChild(sprite);
 
     };
 
-    
+    document.addEventListener('keydown',function(event){
+        if(container.children.length === 0) return;
+        
+        if(event.keyCode === 65){
+            container.children[0].position.x -= 4;
+        }else if(event.keyCode === 68 ){
+            container.children[0].position.x += 4;
+        }
+    });
+
+
+    //Set it going
     animate();
     function animate(){
         
