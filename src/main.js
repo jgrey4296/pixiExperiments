@@ -1,57 +1,88 @@
 require.config({
     baseUrl : '/',
     paths : {
-        pixi : 'libs/pixi'
+        pixi : 'libs/pixi',
+        text : 'libs/text',
+        json : "libs/json",
+        underscore : 'libs/underscore'
     },
 });
 
 
-require(['pixi','./src/jgSpriteSheetProcessor'],function(PIXI,SheetProcessor){
+require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json','json!../data/scene1.json'],function(PIXI,SheetProcessor,_,assets,scene1){
     console.log("Pixi Tests");
+    console.log("Assets:",assets);
+    console.log("Scene 1:",scene1);
     //global Renderer:
     var renderer = PIXI.autoDetectRenderer(
-        512,
-        384,
+        1000,
+        1000,
         {view: document.getElementById("game-canvas")}
     );
 
     //The main Scene
     var container = new PIXI.Container();
-    //Loaded frames of a spritesheet;
-    var frames = [];
+    //Loaded frames of assets;
+    var frames = {};
+
+    //Current sprites:
+    var currentSprites = {};
+    
+    _.keys(assets).forEach(function(assetName){
+        console.log("registering:",assetName);
+        PIXI.loader.add(assetName,"data/"+assets[assetName].fileName);
+    });
+
+    //Everything registered, time to load:
     
     PIXI.loader
-    //Add Assets
-        .add('treeSheet','data/glitch_tree_sheet.png')
-    //Once Loaded:
         .load(function(loader,resources){
-            frames = SheetProcessor(resources,'treeSheet',11,6);
+            console.log("resources:",resources);
+
+            _.keys(assets).forEach(function(assetName){
+                frames[assetName] = SheetProcessor(resources,assetName,assets[assetName].frames.x,
+                                                   assets[assetName].frames.y);
+            });
             
             setupScene();
         });
 
 
-
-
+    //------------------------------
+    //Scene setup CALLED AFTER ASSETS ARE LOADED
+    //------------------------------
+    
     //Setup Function, called after assets are loaded
     var setupScene = function(){
-        var sprite = new PIXI.Sprite(frames[49]);
-        container.addChild(sprite);
-
+        _.keys(scene1).forEach(function(spriteName){
+            var spriteData = scene1[spriteName];
+            var sprite = new PIXI.Sprite(frames[spriteData.assetName][spriteData.frame]);
+            container.addChild(sprite);
+            currentSprites[spriteName] = sprite;
+            
+        });
     };
 
+
+
+    //------------------------------
+    //User input setup
+    //------------------------------
     document.addEventListener('keydown',function(event){
         if(container.children.length === 0) return;
         
         if(event.keyCode === 65){
-            container.children[0].position.x -= 4;
+            currentSprites['tree'].position.x -= 4;
         }else if(event.keyCode === 68 ){
-            container.children[0].position.x += 4;
+            currentSprites['tree'].position.x += 4;
         }
     });
 
 
-    //Set it going
+
+    //------------------------------
+    //Trigger animations
+    //------------------------------
     animate();
     function animate(){
         

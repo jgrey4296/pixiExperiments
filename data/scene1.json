@@ -1,0 +1,18 @@
+{
+    "rock" : {
+        "assetName" : "rock",
+        "frame" : 0,
+        "position" : {
+            "x" : 0,
+            "y" : 200
+        }
+    },
+    "tree" : {
+        "assetName" : "tree",
+        "frame" : 49,
+        "position" : {
+            "x" : 0,
+            "y" : 0
+        }
+    }
+}
