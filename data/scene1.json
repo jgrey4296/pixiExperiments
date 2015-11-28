@@ -3,8 +3,8 @@
         "assetName" : "rock",
         "frame" : 0,
         "position" : {
-            "x" : 0,
-            "y" : 200
+            "x" : 800,
+            "y" : 800
         }
     },
     "tree" : {
@@ -12,7 +12,24 @@
         "frame" : 49,
         "position" : {
             "x" : 0,
-            "y" : 0
+            "y" : 600
+        }
+    },
+    "tree2" : {
+        "assetName" : "tree",
+        "frame" : 30,
+        "position" : {
+            "x" : 600,
+            "y" : 550
+        }
+    },
+    "tree3" : {
+        "assetName" : "tree",
+        "frame" : 30,
+        "position" : {
+            "x" : 600,
+            "y" : 100
         }
     }
+    
 }
