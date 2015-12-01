@@ -1,35 +1,55 @@
-{
-    "rock" : {
-        "assetName" : "rock",
-        "frame" : 0,
-        "position" : {
-            "x" : 800,
-            "y" : 800
-        }
-    },
-    "tree" : {
-        "assetName" : "tree",
-        "frame" : 49,
-        "position" : {
-            "x" : 0,
-            "y" : 600
-        }
-    },
-    "tree2" : {
-        "assetName" : "tree",
-        "frame" : 30,
-        "position" : {
-            "x" : 600,
-            "y" : 550
-        }
-    },
-    "tree3" : {
-        "assetName" : "tree",
-        "frame" : 30,
-        "position" : {
-            "x" : 600,
-            "y" : 100
-        }
+[
+    {
+        "id" : 0,
+        "name" : "room1",
+        "leftOf": null,
+        "rightOf": null,
+        "background" : null,
+        "backgroundFrame" : null,
+        "items" : [
+            {
+                "name" : "rock1",
+                "assetName" : "rock",
+                "frame" : 0,
+                "position" : {
+                    "x" : 800,
+                    "y" : 800
+                }
+            },
+            {
+                "name" : "tree1",
+                "assetName" : "tree",
+                "frame" : 49,
+                "position" : {
+                    "x" : 0,
+                    "y" : 600
+                }
+            },
+            {
+                "name" : "tree2",
+                "assetName" : "tree",
+                "frame" : 30,
+                "position" : {
+                    "x" : 600,
+                    "y" : 550
+                }
+            },
+            {
+                "name" : "tree3",
+                "assetName" : "tree",
+                "frame" : 30,
+                "position" : {
+                    "x" : 600,
+                    "y" : 100
+                }
+            }
+        ],
+        "actors" : [
+            {
+                "name" : "bob",
+                "assetName" : "blah",
+                "frame" : 0
+            }
+        ]            
     }
-    
-}
+]

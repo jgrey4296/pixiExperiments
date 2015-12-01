@@ -8,9 +8,11 @@ if(typeof define !== 'function'){
 define(['pixi','underscore'],function(PIXI,_){
     var curId = 0;
     
-    var Item = function(name,texture){
+    var Item = function(name,texture,position){
         this.id = curId++;
+        //TODO: possible make this a container
         this.sprite = new PIXI.Sprite(texture);
+        this.sprite.position = position;
         this.name = name;
     }
     

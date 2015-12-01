@@ -10,13 +10,15 @@ if(typeof define !== 'function'){
 define(['pixi','underscore'],function(PIXI,_){
     var curId = 0;
     
-    var Room = function(name,texture){
+    var Room = function(name,texture,leftOf,rightOf){
         this.id = curId++;
+        this.container = new PIXI.Container();
         this.sprite = new PIXI.Sprite(texture);
+        this.container.addChild(this.sprite);
         this.name = name;
         //Neighboring rooms:
-        this.leftOf = null;
-        this.rightOf = null;
+        this.leftOf = leftOf;
+        this.rightOf = rightOf;
         //Contains actors:
         this.actors = [];
         //Contains objects:

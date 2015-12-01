@@ -19,15 +19,12 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
         900,
         {view: document.getElementById("game-canvas")}
     );
-
     //The game model
     var gameModel = new GameModel();
-    
     //The main Scene
-    var container = new PIXI.Container();
+    var mainContainer = new PIXI.Container();
     //Loaded frames of assets;
-    var frames = {};
-
+    var loadedAssets = {};
     //Current sprites:
     var currentSprites = {};
     
@@ -42,7 +39,7 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
             console.log("resources:",resources);
             //For each asset, slice into a spritesheet
             _.keys(assets).forEach(function(assetName){
-                frames[assetName] = SheetProcessor(resources,assetName,assets[assetName].frames.x,
+                loadedAssets[assetName] = SheetProcessor(resources,assetName,assets[assetName].frames.x,
                                                    assets[assetName].frames.y);
             });
             
@@ -57,23 +54,12 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     //Setup Function, called after assets are loaded
     var setupScene = function(){
         //setup rooms
-
-        //link rooms
-        
-        //setup items in rooms
-
-        //setup actors in rooms
-
-                
-        //For each sprite in the scene1 json, create and place the sprite
-        _.keys(scene1).forEach(function(spriteName){
-            var spriteData = scene1[spriteName];
-            var sprite = new PIXI.Sprite(frames[spriteData.assetName][spriteData.frame]);
-            sprite.position = spriteData.position;
-            container.addChild(sprite);
-            currentSprites[spriteName] = sprite;
-            
+        _.keys(scene1).forEach(function(roomName){
+            gameModel.addRoom(scene1[roomName],loadedAssets);
         });
+                
+        //Add the first room to the main container
+        mainContainer.addChild(gameModel.container);
     };
 
 
@@ -81,16 +67,41 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     //------------------------------
     //User input setup
     //------------------------------
+    var actions = {
+        "moveLeft" : function(){
+
+        },
+        "moveRight" : function(){
+
+        },
+        "interact" : function(){
+
+        },
+        "openMenu" : function(){
+
+        },
+        "restart" : function(){
+
+        }
+    };
+
+    
     document.addEventListener('keydown',function(event){
-        if(container.children.length === 0) return;
+        if(mainContainer.children.length === 0) return;
 
         //TODO:keys for movement change the model
-        
+
+        //move left and right
         if(event.keyCode === 65){
-            currentSprites['tree'].position.x -= 4;
+            //left
+            //gameModel.moveActor(gameModel.player,'left');
         }else if(event.keyCode === 68 ){
-            currentSprites['tree'].position.x += 4;
+            //right
+            //gameModel.moveActor(gameModel.player,'right');
         }
+
+        //TODO: interact, jump?
+        
     });
 
 
@@ -100,8 +111,9 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     //------------------------------
     animate();
     function animate(){
-        
-        renderer.render(container);
+        //run AI on every n frame...
+        gameModel.gameLoop();
+        renderer.render(mainContainer);
         requestAnimationFrame(animate);
     }
     

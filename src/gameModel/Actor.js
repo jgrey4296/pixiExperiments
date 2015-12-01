@@ -10,6 +10,7 @@ define(['pixi','underscore'],function(PIXI,_){
     
     var Actor = function(name,texture){
         this.id = curId++;
+        //TODO: possible make this a container
         this.sprite = new PIXI.Sprite(texture);
         this.name = name;
         this.facts = [];
