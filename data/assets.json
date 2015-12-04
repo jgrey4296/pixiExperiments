@@ -16,5 +16,14 @@
             "x" : 1,
             "y" : 1
         }
+    },
+    {
+        "id" : 2,
+        "name" : "pig",
+        "fileName" : "glitch_pig.png",
+        "frames" : {
+            "x" : 10,
+            "y" : 5
+        }
     }
 ]

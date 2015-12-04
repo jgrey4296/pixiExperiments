@@ -10,7 +10,12 @@ define(['underscore','./Actor','./Room','pixi','./Item'],function(_,Actor,Room,P
        either way: movement on chosen axes, collision detection, boundary detection, and transtion to new rooms/scenes necessary.
        
      */
-    
+
+    /**
+       @class GameModel
+       @extends PIXI.Container
+       @purpose a main access and control point for game logic
+     */
     var GameModel = function(){
         PIXI.Container.apply(this);
         //All Actors
@@ -75,6 +80,13 @@ define(['underscore','./Actor','./Room','pixi','./Item'],function(_,Actor,Room,P
             this.addActorToRoom(theRoom,d,availableAssets);
         },this);
 
+        if(roomDesc.origin){
+            this.removeChildren();
+            this.addChild(theRoom);
+            this.room = theRoom;
+        }
+
+        
         return theRoom;
         
     };
@@ -84,18 +96,19 @@ define(['underscore','./Actor','./Room','pixi','./Item'],function(_,Actor,Room,P
                                availableAssets[itemDesc.assetName][itemDesc.frame],
                                itemDesc.position);
         room.items.push(theItem);
-        room.addChild(theItem.sprite);
+        room.addChild(theItem);
         
     };
 
     GameModel.prototype.addActorToRoom = function(room,actorDesc,availableAssets){
+        console.log("Creating actor:",actorDesc.name);
         var asset = availableAssets[actorDesc.assetName];
         if(asset && actorDesc.frame) asset = asset[actorDesc.frame];
-        var theActor = new Actor(actorDesc.name,asset);
+        var theActor = new Actor(actorDesc.name,asset,actorDesc.position);
 
         //add the actor to the room:
-        room.actors.push(theActor);
-        room.addChild(theActor.sprite);
+        room.actors[theActor.name] = theActor;
+        room.addChild(theActor);
     };
     
     //------------------------------

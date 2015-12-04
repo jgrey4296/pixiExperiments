@@ -20,7 +20,7 @@ define(['pixi','underscore'],function(PIXI,_){
         this.leftOf = leftOf;
         this.rightOf = rightOf;
         //Contains actors:
-        this.actors = [];
+        this.actors = {};
         //Contains objects:
         this.items = [];
     }

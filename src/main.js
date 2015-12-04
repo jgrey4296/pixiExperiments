@@ -56,13 +56,11 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
         console.log("Setting up Scene: ",scene1);
         //setup rooms
         scene1.forEach(function(room){
-            var createdRoom = gameModel.addRoom(room,loadedAssets);
-            if(room.origin){
-                gameModel.addChild(createdRoom);
-            }
+            gameModel.addRoom(room,loadedAssets);
         });
-                
-        //Add the first room to the main container
+        
+        //Add the gameModel to the main container
+        mainContainer.removeChildren();
         mainContainer.addChild(gameModel);
     };
 
@@ -73,10 +71,10 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     //------------------------------
     var actions = {
         "moveLeft" : function(){
-
+            gameModel.moveActor("bob","left");
         },
         "moveRight" : function(){
-
+            gameModel.moveActor("bob","right");
         },
         "interact" : function(){
 
@@ -98,10 +96,18 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
         //move left and right
         if(event.keyCode === 65){
             console.log("Left");
+            actions['moveLeft']();
             //gameModel.moveActor(gameModel.player,'left');
         }else if(event.keyCode === 68 ){
             console.log("Right");
+            actions['moveRight']();
             //gameModel.moveActor(gameModel.player,'right');
+        }else if(event.keyCode === 87){
+            console.log("up");
+        }else if(event.keyCode === 83){
+            console.log("down");
+        }else{
+            console.log(event.keyCode);
         }
 
         //TODO: interact, jump?

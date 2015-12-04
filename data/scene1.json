@@ -46,6 +46,15 @@
             }
         ],
         "actors" : [
+            {
+                "name" : "bob",
+                "assetName" : "pig",
+                "frame" : 1,
+                "position" : {
+                    "x" : 500,
+                    "y" : 450
+                }
+            }
         ]            
     }
 ]

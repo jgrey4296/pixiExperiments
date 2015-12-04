@@ -7,14 +7,20 @@ if(typeof define !== 'function'){
 */
 define(['pixi','underscore'],function(PIXI,_){
     var curId = 0;
-    
+
+    /**
+       @class Item
+       @extends PIXI.Sprite
+       @purpose a sprite that represents an item in the game model
+     */
     var Item = function(name,texture,position){
+        PIXI.Sprite.call(this,texture);
         this.id = curId++;
-        //TODO: possible make this a container
-        this.sprite = new PIXI.Sprite(texture);
-        this.sprite.position = position;
+        this.position = position;
         this.name = name;
     }
+    Item.prototype = Object.create(PIXI.Sprite.prototype);
+    Item.prototype.constructor = Item;
     
     return Item;
     
