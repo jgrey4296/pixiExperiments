@@ -11,10 +11,10 @@ define(['pixi','underscore'],function(PIXI,_){
     var curId = 0;
     
     var Room = function(name,texture,leftOf,rightOf){
+        PIXI.Container.apply(this);
         this.id = curId++;
-        this.container = new PIXI.Container();
         this.sprite = new PIXI.Sprite(texture);
-        this.container.addChild(this.sprite);
+        this.addChild(this.sprite);
         this.name = name;
         //Neighboring rooms:
         this.leftOf = leftOf;
@@ -24,8 +24,10 @@ define(['pixi','underscore'],function(PIXI,_){
         //Contains objects:
         this.items = [];
     }
+    Room.prototype = Object.create(PIXI.Container.prototype);
+    Room.prototype.constructor = Room;
 
     
-    
+    return Room;
 
 });

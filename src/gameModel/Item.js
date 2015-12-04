@@ -16,5 +16,6 @@ define(['pixi','underscore'],function(PIXI,_){
         this.name = name;
     }
     
-
+    return Item;
+    
 });

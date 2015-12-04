@@ -1,8 +1,8 @@
--if(typeof define !== 'function'){
+if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
+define(['underscore','./Actor','./Room','pixi','./Item'],function(_,Actor,Room,PIXI,Item){
 
     /**
        what sort of game model to make? top down 2d zelda like? or 2d side scrolling mario like?
@@ -12,7 +12,7 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
      */
     
     var GameModel = function(){
-        this.container = new PIXI.Container();
+        PIXI.Container.apply(this);
         //All Actors
         this.actors = [];
         //All Rooms
@@ -22,6 +22,8 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
         //The player character:
         this.player = null;
     };
+    GameModel.prototype = Object.create(PIXI.Container.prototype);
+    GameModel.prototype.constructor = GameModel;
 
     GameModel.prototype.GoToLeftRoom = function(){
         this.room = this.rooms[this.room.rightOf];
@@ -54,24 +56,27 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
     //Constructor functions:
     //------------------------------
 
-    GameModel.prototype.addRoom = function(obj,availableAssets){
+    GameModel.prototype.addRoom = function(roomDesc,availableAssets){
         //create the room,
-        var asset = availableAssets[obj.background];
-        if(asset && obj.backgroundFrame) asset = asset[obj.backgroundFrame];
+        var asset = availableAssets[roomDesc.background];
+        if(asset && obj.backgroundFrame) asset = asset[roomDesc.backgroundFrame];
         
-        var theRoom = new Room(obj.name,asset,obj.leftOf,obj.rightOf);
+        var theRoom = new Room(roomDesc.name,asset,roomDesc.leftOf,roomDesc.rightOf);
         //add it to master list
         this.rooms.push(theRoom);
 
         //add each defined item to the room
-        obj.items.forEach(function(d){
+        roomDesc.items.forEach(function(d){
             this.addItemToRoom(theRoom,d,availableAssets);
-        });
+        },this);
         
         //add each defined actor to the room
-        obj.actors.forEach(function(d){
+        roomDesc.actors.forEach(function(d){
             this.addActorToRoom(theRoom,d,availableAssets);
-        });
+        },this);
+
+        return theRoom;
+        
     };
 
     GameModel.prototype.addItemToRoom = function(room,itemDesc,availableAssets){
@@ -79,7 +84,7 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
                                availableAssets[itemDesc.assetName][itemDesc.frame],
                                itemDesc.position);
         room.items.push(theItem);
-        room.container.addChild(theItem.sprite);
+        room.addChild(theItem.sprite);
         
     };
 
@@ -90,7 +95,7 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
 
         //add the actor to the room:
         room.actors.push(theActor);
-        room.container.addChild(theActor.sprite);
+        room.addChild(theActor.sprite);
     };
     
     //------------------------------
@@ -112,5 +117,5 @@ define(['underscore','Actor','Room','pixi'],function(_,Actor,Room,PIXI){
     };
 
     
-    
+    return GameModel;
 });

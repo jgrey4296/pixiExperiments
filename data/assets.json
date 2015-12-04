@@ -1,16 +1,20 @@
-{
-    "tree" : {
+[
+    {
+        "id" : 0,
+        "name" : "tree",
         "fileName": "glitch_tree_sheet.png",
         "frames" : {
             "x": 11,
             "y" : 6
         }
     },
-    "rock" : {
+    {
+        "id" : 1,
+        "name" : "rock",
         "fileName" : "glitch_rock_metal.png",
         "frames" : {
             "x" : 1,
             "y" : 1
         }
     }
-}
+]

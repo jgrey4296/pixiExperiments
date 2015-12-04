@@ -9,7 +9,7 @@ require.config({
 });
 
 
-require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json','json!../data/scene1.json','gameModel/gameModel'],function(PIXI,SheetProcessor,_,assets,scene1,GameModel){
+require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json','json!../data/scene1.json','./src/gameModel/gameModel'],function(PIXI,SheetProcessor,_,assets,scene1,GameModel){
     console.log("Pixi Tests");
     console.log("Assets:",assets);
     console.log("Scene 1:",scene1);
@@ -28,9 +28,9 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     //Current sprites:
     var currentSprites = {};
     
-    _.keys(assets).forEach(function(assetName){
-        console.log("registering:",assetName);
-        PIXI.loader.add(assetName,"data/"+assets[assetName].fileName);
+    assets.forEach(function(asset){
+        console.log("registering:",asset.name);
+        PIXI.loader.add(asset.name,"data/"+asset.fileName);
     });
 
     //Everything registered, time to load:
@@ -38,9 +38,9 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
         .load(function(loader,resources){
             console.log("resources:",resources);
             //For each asset, slice into a spritesheet
-            _.keys(assets).forEach(function(assetName){
-                loadedAssets[assetName] = SheetProcessor(resources,assetName,assets[assetName].frames.x,
-                                                   assets[assetName].frames.y);
+            assets.forEach(function(asset){
+                loadedAssets[asset.name] = SheetProcessor(resources,asset.name,asset.frames.x,
+                                                   asset.frames.y);
             });
             
             setupScene();
@@ -53,13 +53,17 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
     
     //Setup Function, called after assets are loaded
     var setupScene = function(){
+        console.log("Setting up Scene: ",scene1);
         //setup rooms
-        _.keys(scene1).forEach(function(roomName){
-            gameModel.addRoom(scene1[roomName],loadedAssets);
+        scene1.forEach(function(room){
+            var createdRoom = gameModel.addRoom(room,loadedAssets);
+            if(room.origin){
+                gameModel.addChild(createdRoom);
+            }
         });
                 
         //Add the first room to the main container
-        mainContainer.addChild(gameModel.container);
+        mainContainer.addChild(gameModel);
     };
 
 
@@ -93,10 +97,10 @@ require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets
 
         //move left and right
         if(event.keyCode === 65){
-            //left
+            console.log("Left");
             //gameModel.moveActor(gameModel.player,'left');
         }else if(event.keyCode === 68 ){
-            //right
+            console.log("Right");
             //gameModel.moveActor(gameModel.player,'right');
         }
 

@@ -1,7 +1,8 @@
-[
+[ 
     {
         "id" : 0,
         "name" : "room1",
+        "origin" : true,
         "leftOf": null,
         "rightOf": null,
         "background" : null,
@@ -45,11 +46,6 @@
             }
         ],
         "actors" : [
-            {
-                "name" : "bob",
-                "assetName" : "blah",
-                "frame" : 0
-            }
         ]            
     }
 ]

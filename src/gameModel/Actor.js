@@ -30,6 +30,6 @@ define(['pixi','underscore'],function(PIXI,_){
         this.sprite.position.y += amt;
     }
     
-    
+    return Actor;
 
 });
