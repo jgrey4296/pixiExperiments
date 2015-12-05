@@ -22,12 +22,12 @@ require(['./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json',
 
     //Globals
     var pig,platforms,cursors;
-    
 
     //Game Creation
     var game = new Phaser.Game(1000,900, Phaser.AUTO,'game-canvas',{
         //Prior to game creation
         preload : function(){
+            //Load each asset definition object
             assets.forEach(function(asset){
                 console.log("registering:",asset);
                 if(asset.type === "image"){
@@ -68,6 +68,13 @@ require(['./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json',
             var ledge = platforms.create(0,game.world.height - 300,'simpleTile');
             ledge.scale.setTo(400/32, 1);
             ledge.body.immovable = true;
+
+            //TODO:
+            //Create rooms in the game model.
+            //This includes items and actors IN each room
+            scene1.forEach(function(roomDescription){
+
+            });
             
         },
         //Update function
