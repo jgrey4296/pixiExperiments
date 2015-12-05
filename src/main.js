@@ -1,130 +1,105 @@
 require.config({
     baseUrl : '/',
     paths : {
+        phaser : 'libs/phaser.min',
         pixi : 'libs/pixi',
         text : 'libs/text',
         json : "libs/json",
         underscore : 'libs/underscore'
     },
+    shim: {
+        'phaser' : {
+            exports : 'Phaser'
+        }
+    }
 });
 
-
-require(['pixi','./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json','json!../data/scene1.json','./src/gameModel/gameModel'],function(PIXI,SheetProcessor,_,assets,scene1,GameModel){
+//Note: keep phaser as the last require, don't define it, let it be global
+require(['./src/jgSpriteSheetProcessor','underscore','json!../data/assets.json','json!../data/scene1.json','phaser'],function(SheetProcessor,_,assets,scene1){
     console.log("Pixi Tests");
     console.log("Assets:",assets);
     console.log("Scene 1:",scene1);
-    //global Renderer:
-    var renderer = PIXI.autoDetectRenderer(
-        1000,
-        900,
-        {view: document.getElementById("game-canvas")}
-    );
-    //The game model
-    var gameModel = new GameModel();
-    //The main Scene
-    var mainContainer = new PIXI.Container();
-    //Loaded frames of assets;
-    var loadedAssets = {};
-    //Current sprites:
-    var currentSprites = {};
-    
-    assets.forEach(function(asset){
-        console.log("registering:",asset.name);
-        PIXI.loader.add(asset.name,"data/"+asset.fileName);
-    });
 
-    //Everything registered, time to load:
-    PIXI.loader
-        .load(function(loader,resources){
-            console.log("resources:",resources);
-            //For each asset, slice into a spritesheet
+    //Globals
+    var pig,platforms,cursors;
+    
+
+    //Game Creation
+    var game = new Phaser.Game(1000,900, Phaser.AUTO,'game-canvas',{
+        //Prior to game creation
+        preload : function(){
             assets.forEach(function(asset){
-                loadedAssets[asset.name] = SheetProcessor(resources,asset.name,asset.frames.x,
-                                                   asset.frames.y);
+                console.log("registering:",asset);
+                if(asset.type === "image"){
+                    console.log("Loading image:",asset.name);
+                    game.load.image(asset.name,"data/"+asset.fileName);
+                }else if(asset.type === "spritesheet"){
+                    console.log("Loading spritesheet: ",asset.name);
+                    game.load.spritesheet(asset.name,"data/"+asset.fileName,asset.frames.x,asset.frames.y);
+                }else{
+                    console.log("Unknown type");
+                }
             });
+        },
+        //Setup the game
+        create : function(){
+            console.log("Creating");
+            //Main elements setup:
+            game.physics.startSystem(Phaser.Physics.ARCADE);
+
+            cursors = game.input.keyboard.createCursorKeys();
+
+            //Scene specific setup:
+            pig = game.add.sprite(0,0,'pig',23);
+            game.physics.arcade.enable(pig);
+            pig.body.bounce.y = 0.2;
+            pig.body.gravity.y = 300;
+            pig.body.collideWorldBounds = true;
             
-            setupScene();
-        });
+            game.add.sprite(800,400,'tree',1);
 
+            platforms = game.add.group();
+            platforms.enableBody = true;
 
-    //------------------------------
-    //Scene setup CALLED AFTER ASSETS ARE LOADED
-    //------------------------------
-    
-    //Setup Function, called after assets are loaded
-    var setupScene = function(){
-        console.log("Setting up Scene: ",scene1);
-        //setup rooms
-        scene1.forEach(function(room){
-            gameModel.addRoom(room,loadedAssets);
-        });
-        
-        //Add the gameModel to the main container
-        mainContainer.removeChildren();
-        mainContainer.addChild(gameModel);
-    };
+            var ground = platforms.create(0,game.world.height - 64, 'simpleTile');
+            ground.scale.setTo((1000 / 32), 1);
+            ground.body.immovable = true;
 
-
-
-    //------------------------------
-    //User input setup
-    //------------------------------
-    var actions = {
-        "moveLeft" : function(){
-            gameModel.moveActor("bob","left");
+            var ledge = platforms.create(0,game.world.height - 300,'simpleTile');
+            ledge.scale.setTo(400/32, 1);
+            ledge.body.immovable = true;
+            
         },
-        "moveRight" : function(){
-            gameModel.moveActor("bob","right");
-        },
-        "interact" : function(){
+        //Update function
+        update : function(){
+            game.physics.arcade.collide(pig,platforms);
+          
 
-        },
-        "openMenu" : function(){
+            if(cursors.left.isDown){
+                pig.body.velocity.x = -150;
+            }else if(cursors.right.isDown){
+                pig.body.velocity.x = 150;
+            }else{
+                pig.body.velocity.x = 0;
+            }
 
-        },
-        "restart" : function(){
-
-        }
-    };
-
-    
-    document.addEventListener('keydown',function(event){
-        if(mainContainer.children.length === 0) return;
-
-        //TODO:keys for movement change the model
-
-        //move left and right
-        if(event.keyCode === 65){
-            console.log("Left");
-            actions['moveLeft']();
-            //gameModel.moveActor(gameModel.player,'left');
-        }else if(event.keyCode === 68 ){
-            console.log("Right");
-            actions['moveRight']();
-            //gameModel.moveActor(gameModel.player,'right');
-        }else if(event.keyCode === 87){
-            console.log("up");
-        }else if(event.keyCode === 83){
-            console.log("down");
-        }else{
-            console.log(event.keyCode);
-        }
-
-        //TODO: interact, jump?
-        
+            if(cursors.up.isDown && pig.body.touching.down){
+                pig.body.velocity.y = -350;
+            }
+            
+            
+        }        
     });
 
+    //Setup Function, called after assets are loaded
+    var setupScene = function(scene){
+        console.log("Setting up Scene: ",scene);
+        //setup rooms
+        scene.forEach(function(room){
+            console.log("Need to setup:",room);
+        });
 
+    };
 
-    //------------------------------
-    //Trigger animations
-    //------------------------------
-    animate();
-    function animate(){
-        //run AI on every n frame...
-        gameModel.gameLoop();
-        renderer.render(mainContainer);
-        requestAnimationFrame(animate);
-    }
     
 });

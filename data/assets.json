@@ -3,27 +3,33 @@
         "id" : 0,
         "name" : "tree",
         "fileName": "glitch_tree_sheet.png",
+        "type" : "spritesheet",
         "frames" : {
-            "x": 11,
-            "y" : 6
+            "x": 318,
+            "y" : 250
         }
     },
     {
         "id" : 1,
         "name" : "rock",
         "fileName" : "glitch_rock_metal.png",
-        "frames" : {
-            "x" : 1,
-            "y" : 1
-        }
+        "type" : "image"
     },
     {
         "id" : 2,
         "name" : "pig",
         "fileName" : "glitch_pig.png",
+        "type" : "spritesheet",
         "frames" : {
-            "x" : 10,
-            "y" : 5
+            "x" : 87,
+            "y" : 64
         }
+    },
+    {
+        "id" : 3,
+        "name" : "simpleTile",
+        "fileName" : "simpleTile_32x32.png",
+        "type" : "image",
+        "size" : { "x" : 32, "y" : 32 }
     }
 ]
