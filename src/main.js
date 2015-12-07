@@ -15,11 +15,12 @@ require.config({
 });
 
 //Note: keep phaser as the last require, don't define it, let it be global
-require(['underscore','./GameState/Boot','./GameState/PreLoadAssets','GameState','phaser'],function(_,Boot,PreLoadAssets,GameState){
+require(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/GameState/GameState','phaser'],function(_,Boot,PreLoadAssets,GameState){
     console.log("Phaser based game");
 
     //Game Creation
-    var game = new Phaser.Game(1000,900, Phaser.AUTO,'game-canvas');
+    var game = new Phaser.Game(1000,600, Phaser.AUTO,'game-canvas');
+    console.log(game);
     //States to add: boot, preload, GameState
     //TODO: load game states parameterised from the scene json?
     game.state.add('Boot',Boot);
@@ -27,8 +28,8 @@ require(['underscore','./GameState/Boot','./GameState/PreLoadAssets','GameState'
     game.state.add('GameState',GameState);
     
     //Global stuff to set:
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.state.start("Boot");
+    //game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.state.start("Boot");
 
     
 });

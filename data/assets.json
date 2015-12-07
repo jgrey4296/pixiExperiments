@@ -31,5 +31,18 @@
         "fileName" : "simpleTile_32x32.png",
         "type" : "image",
         "size" : { "x" : 32, "y" : 32 }
+    },
+    {
+        "id:" : 4,
+        "name" : "hillyBackground",
+        "fileName" : "background.png",
+        "type" : "image"
+    },
+    {
+        "id" : 5,
+        "name" : "countryBackground",
+        "fileName" : "countryBackground.png",
+        "type" : "image"
     }
+    
 ]

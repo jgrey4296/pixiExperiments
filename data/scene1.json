@@ -5,18 +5,9 @@
         "origin" : true,
         "leftOf": null,
         "rightOf": null,
-        "background" : null,
+        "background" : "countryBackground",
         "backgroundFrame" : null,
         "items" : [
-            {
-                "name" : "rock1",
-                "assetName" : "rock",
-                "frame" : 0,
-                "position" : {
-                    "x" : 800,
-                    "y" : 800
-                }
-            },
             {
                 "name" : "tree1",
                 "assetName" : "tree",
@@ -29,19 +20,28 @@
             {
                 "name" : "tree2",
                 "assetName" : "tree",
-                "frame" : 30,
+                "frame" : 15,
                 "position" : {
                     "x" : 600,
-                    "y" : 550
+                    "y" : 570
                 }
             },
             {
                 "name" : "tree3",
                 "assetName" : "tree",
-                "frame" : 30,
+                "frame" : 2,
                 "position" : {
-                    "x" : 600,
-                    "y" : 100
+                    "x" : 800,
+                    "y" : 540
+                }
+            },
+            {
+                "name" : "rock1",
+                "assetName" : "rock",
+                "physical" : true,
+                "position" : {
+                    "x" : 800,
+                    "y" : 500
                 }
             }
         ],
