@@ -1,7 +1,11 @@
-define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
+define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','phaser'],function(scene,_,SpeechBubble,Actor){
 
-    //The game state to describe a room you are in
-    var GameState = function(game){
+    /**
+       @class GameState
+       @constructor
+       @purpose main state of a game. In this case, 2d side scroll platform like.
+     */
+    var GameState = function(game,scene){
         this.physicsType = Phaser.Physics.ARCADE;
         
         this.game = game;
@@ -18,22 +22,41 @@ define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
         
         //Reasoning / AI
         this.rete = null;
+
+        if(scene !== undefined){
+            this.scene = scene;
+        }
         
     };
 
+    /**
+       @class GameState
+       @method init
+       @purpose called on creation, after ctor
+     */
     GameState.prototype.init = function(){
         console.log("GameState init");
         //Setup the reasoning system / RETE
     };
-    
+
+    /**
+       @class GameState
+       @method preload
+       @purpose loads assets
+     */
     GameState.prototype.preload = function(){
         console.log("GameState preload");
-        scene.forEach(function(room){
+        //this.scene.forEach(function(room){
             //create the room groups and store them
-        });
+        //});
         
     };
 
+    /**
+       @class GameState
+       @method create
+       @purpose called when this state becomes active
+     */
     GameState.prototype.create = function(){
         console.log("GameState create");
         this.game.time.desiredFps = 30;
@@ -44,11 +67,15 @@ define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
 
         //create the starting room:
         this.buildRoom(scene[0]);
-
         this.physics.arcade.setBounds(0,0,this.game.width,this.game.height-75);
-        
+
     };
 
+    /**
+       @class GameState
+       @method update
+       @purpose called each tick
+     */
     GameState.prototype.update = function(){
         //get the cursor keys, move the playable character as necessary
         //get interaction key
@@ -58,31 +85,38 @@ define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
             this.controllableActor.body.velocity.y = -250;
         }else if(this.cursors.down.isDown){
             console.log(this);
-
         }else if(this.cursors.left.isDown){
             this.controllableActor.body.velocity.x = -150;
             if(this.controllableActor.facing === 'right'){
-                this.controllableActor.scale.x = -1;
-                this.controllableActor.facing = 'left';
+                this.controllableActor.flip();
             }
-            
         }else if(this.cursors.right.isDown){
             this.controllableActor.body.velocity.x = 150;
             if(this.controllableActor.facing === 'left'){
-                this.controllableActor.scale.x = 1;
-                this.controllableActor.facing = 'right';
+                this.controllableActor.flip();
             }
         }
 
+        //todo: perform actions for each other actor
+        
         this.game.physics.arcade.collide(this.groups.actors,this.groups.actors,
                                       function(s1,s2){
                                           console.log("Collided: ",s1.name, s2.name);
+                                          s1.say("I collided with " + s2.name);
                                       },null,this);
 
         this.game.physics.arcade.collide(this.groups.actors,this.groups.objects);
         
     };
 
+    //------------------------------
+    
+    /**
+       @class GameState
+       @method buildRoom
+       @purpose takes a description of a room and instantiates it for display and game logic
+     */
+    
     GameState.prototype.buildRoom = function(room){
         //background setup:
         this.background = this.add.sprite(0,0,room.background);
@@ -119,23 +153,21 @@ define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
         },this);
     };
 
-    
+    /**
+       @class GameState
+       @method buildActor
+       @purpose creates an actor sprite, setting up group and physics
+     */
     GameState.prototype.buildActor = function(d){
         if(d.group === undefined) d.group = "default";
         if(d.physical === undefined) d.physical = false;
         //create the group if necessary
         if(this.groups[d.group] === undefined) this.groups[d.group] = this.add.group(undefined,d.group,false,d.physical,this.physicsType);
 
-        var actor = this.groups[d.group].create(d.position.x,d.position.y,d.assetName,d.frame);
-        actor.anchor.setTo(.5,1);
-
-        //Custom properties:
-        actor.name = d.name;
-        actor.facing = d.facing;
-
-        if(actor.facing === 'left'){
-            actor.scale.x = -1;
-        }
+        //TODO: customise the group.classType for custom classes
+        var actor = new Actor(this.game,d.position.x,d.position.y,d.assetName,d.frame,d.name,d.facing);
+        //add to the actors group
+        this.groups[d.group].add(actor);
         
         if(d.physical){
             this.game.physics.enable(actor,this.physicsType);
@@ -149,6 +181,11 @@ define(['json!data/scene1.json','underscore','phaser'],function(scene,_){
         }
     };
 
+    /**
+       @class GameState
+       @method buildItem
+       @purpose creates a non-actor element in the room
+     */
     GameState.prototype.buildItem = function(d){
             //if there is no group defined:
             if(d.group === undefined) d.group = "default";

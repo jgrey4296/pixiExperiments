@@ -12,6 +12,8 @@ define(['underscore','json!data/assets.json','phaser'],function(_,assets){
                 this.game.load.image(asset.name,"data/"+asset.fileName);
             }else if(asset.type === "spritesheet"){
                 this.game.load.spritesheet(asset.name,"data/"+asset.fileName,asset.frames.x,asset.frames.y);
+            }else if(asset.type === "bitmapfont"){
+                this.game.load.bitmapFont(asset.name,asset.url,null,asset.data);
             }else{
                 console.log("Unknown asset type: ",asset);
             }
