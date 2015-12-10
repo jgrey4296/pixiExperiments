@@ -3,10 +3,38 @@
         "id" : 0,
         "name" : "room1",
         "origin" : true,
-        "leftOf": null,
-        "rightOf": null,
+        "connections" : {
+            "leftOf": null,
+            "rightOf": null,
+            "downOf" : null,
+            "upOf"  : null
+        },
         "background" : "countryBackground",
         "backgroundFrame" : null,
+        "doors" : [
+            {
+                "name" : "leftDoor",
+                "connectsTo" : "leftOf",
+                "assetName" : "door",
+                "position" : {
+                    "x" : 0,
+                    "y" : 300                    
+                }
+            }
+        ],
+        "walls" : [
+            {
+                "name" : "leftWall",
+                "assetName" : "wallTexture",
+                "type" : "tileSprite",
+                "position" : {
+                    "x" : 0,
+                    "y" : 0
+                },
+                "height" : 600,
+                "width" : 20
+            }
+        ],
         "items" : [
             {
                 "name" : "tree1",

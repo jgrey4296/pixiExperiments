@@ -1,4 +1,4 @@
-define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','phaser'],function(scene,_,SpeechBubble,Actor){
+define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser'],function(scene,_,SpeechBubble,Actor,Room){
 
     /**
        @class GameState
@@ -63,11 +63,16 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.cursors = this.game.input.keyboard.createCursorKeys();
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.physics.arcade.gravity.y = 350;
+        this.game.physics.arcade.gravity.y = 0;
 
         //create the starting room:
-        this.buildRoom(scene[0]);
-        this.physics.arcade.setBounds(0,0,this.game.width,this.game.height-75);
+        var newRoom = this.buildRoom(scene[0]);
+        this.currentRoom = newRoom;
+        this.game.world.add(newRoom);
+
+        
+        //Set world boundaries
+        //this.physics.arcade.setBounds(0,0,this.game.width,this.game.height-75);
 
     };
 
@@ -77,28 +82,11 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
        @purpose called each tick
      */
     GameState.prototype.update = function(){
-        //get the cursor keys, move the playable character as necessary
-        //get interaction key
-        //run reasoning for each character, register actions for them to perform
-        this.controllableActor.body.velocity.x = 0;
-        if(this.cursors.up.isDown && this.controllableActor.body.onFloor()){
-            this.controllableActor.body.velocity.y = -250;
-        }else if(this.cursors.down.isDown){
-            console.log(this);
-        }else if(this.cursors.left.isDown){
-            this.controllableActor.body.velocity.x = -150;
-            if(this.controllableActor.facing === 'right'){
-                this.controllableActor.flip();
-            }
-        }else if(this.cursors.right.isDown){
-            this.controllableActor.body.velocity.x = 150;
-            if(this.controllableActor.facing === 'left'){
-                this.controllableActor.flip();
-            }
-        }
 
-        //todo: perform actions for each other actor
-        
+        this.controllableActor.body.velocity.x = 0;
+        this.controllableActor.body.velocity.y = 0;
+
+
         this.game.physics.arcade.collide(this.groups.actors,this.groups.actors,
                                       function(s1,s2){
                                           console.log("Collided: ",s1.name, s2.name);
@@ -106,6 +94,22 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                                       },null,this);
 
         this.game.physics.arcade.collide(this.groups.actors,this.groups.objects);
+        
+        
+        //get the cursor keys, move the playable character as necessary
+        //get interaction key
+        //run reasoning for each character, register actions for them to perform
+        if(this.cursors.up.isDown){
+            this.controllableActor.move('up');
+        }else if(this.cursors.down.isDown){
+            this.controllableActor.move('down');
+        }else if(this.cursors.left.isDown){
+            this.controllableActor.move('left');
+        }else if(this.cursors.right.isDown){
+            this.controllableActor.move('right');
+        }
+
+        //todo: perform actions for each other actor
         
     };
 
@@ -118,39 +122,9 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
      */
     
     GameState.prototype.buildRoom = function(room){
-        //background setup:
-        this.background = this.add.sprite(0,0,room.background);
-        this.background.width = this.game.width;
-        this.background.height = this.game.height;
-        
-        //todo:build the floor, ceiling, and walls
-        //TODO: sort items by y value
-        room.items.sort(function(a,b){
-            return a.position.y - b.position.y;
-        });
-        
-        var pre = room.items.filter(function(d){
-            return d.position.y < this.game.height - 75;
-        },this);
-
-        var post = room.items.filter(function(d){
-            return d.position.y >= this.game.height - 75;
-        },this);
-
-        console.log("Filtered:",pre,post);
-        
-        pre.forEach(function(d){
-            this.buildItem(d);
-        },this);
-
-        room.actors.forEach(function(d){
-            this.buildActor(d);
-            
-        },this);
-
-        post.forEach(function(d){
-            this.buildItem(d);
-        },this);
+        var newRoom = new Room(this.game,room);
+        this.rooms[newRoom.id] = newRoom;
+        return newRoom;
     };
 
     /**

@@ -40,6 +40,30 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
         }
     };
     
+    Actor.prototype.move = function(direction,strength){
+        if(direction === undefined){
+            this.body.velocity.x = 0;
+            this.body.velocity.y = 0;
+        }
+        if(strength === undefined) strength = 150;
+        
+        if(direction === 'down'){
+            this.body.velocity.y = strength;
+        }else if(direction === 'up'){
+            this.body.velocity.y = -strength;
+        }else if(direction === 'right'){
+            this.body.velocity.x = strength;
+            if(this.facing === 'left'){
+                this.flip();
+            }
+        }else if(direction === 'left'){
+            this.body.velocity.x = -strength;
+            if(this.facing === 'right'){
+                this.flip();
+            }
+        }
+    };
+
     
     return Actor;
 });
