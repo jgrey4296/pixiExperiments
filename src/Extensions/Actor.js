@@ -1,23 +1,43 @@
 
 define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
 
-    var Actor = function(game,x,y,key,frame,name,facing){
-        console.log("Creating actor: ",name);
+    var Actor = function(game,x,y,key,frame,name,facing,controllable,width,height){
+        console.log(name);
         Phaser.Sprite.call(this,game,x,y,key,frame);
         this.name = name;
+        this.defaultTexture = key;
+        this.currentTexture = key;
         this.inventory = {};
-        this.facing = facing;
+        this.facing = facing || 'right';
+        this.controllable = controllable || false;
         this.anchor.setTo(.5,1);
+        this.width = width || this.width;
+        this.height = height || this.height;
         
         if(this.facing === "left") this.flip();
         
         //Speech bubble:
         this.speechBubble = null;
 
+        //animations
+        this.registeredAnimations = {};
         
     };
     Actor.prototype = Object.create(Phaser.Sprite.prototype);
     Actor.prototype.constructor = Actor;
+
+    Actor.prototype.updateTexture = function(name){
+        if(this.currentTexture === name) return false;
+        this.currentTexture = name;
+        this.loadTexture(name);
+        return true;
+    };
+
+    Actor.prototype.setupAnimation = function(name,animation){
+        if(animation && this.updateTexture(animation[0])){
+            this.animations.add(name);
+        }        
+    };
     
     Actor.prototype.flip = function(){
         if(this.facing === "right") {
@@ -42,28 +62,52 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
     
     Actor.prototype.move = function(direction,strength){
         if(direction === undefined){
-            this.body.velocity.x = 0;
-            this.body.velocity.y = 0;
+            this.body.velocity.x *= 0.9;
+            this.body.velocity.y *= 0.9;
         }
         if(strength === undefined) strength = 150;
         
         if(direction === 'down'){
-            this.body.velocity.y = strength;
+            this.body.velocity.y += strength;
         }else if(direction === 'up'){
-            this.body.velocity.y = -strength;
+            this.body.velocity.y -= strength;
         }else if(direction === 'right'){
-            this.body.velocity.x = strength;
+            this.body.velocity.x += strength;
+            this.setupAnimation('walk',this.registeredAnimations['walk']);
             if(this.facing === 'left'){
                 this.flip();
             }
         }else if(direction === 'left'){
-            this.body.velocity.x = -strength;
+            this.body.velocity.x -= strength;
+            this.setupAnimation('walk',this.registeredAnimations['walk']);
             if(this.facing === 'right'){
                 this.flip();
             }
         }
+
+        if(Math.abs(this.body.velocity.x) < 25){
+            this.animations.stop();
+            //this.updateTexture(this.defaultTexture);
+        }else{
+            if(this.registeredAnimations['walk'] !== undefined){
+                this.animations.play('walk',this.registeredAnimations['walk'][1]);
+            }
+        }
+        
     };
 
+
+    //update/AI
+    Actor.prototype.update = function(externalInformation){
+        if(this.body.velocity.x < 15){
+            console.log("Updating: ",this.name);
+            var moveDir = _.sample(['left','right'],1);
+            this.move(moveDir[0]);
+        }
+
+    };
+
+    
     
     return Actor;
 });

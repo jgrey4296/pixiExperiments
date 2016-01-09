@@ -4,35 +4,56 @@
         "name" : "room1",
         "origin" : true,
         "connections" : {
-            "leftOf": null,
-            "rightOf": null,
-            "downOf" : null,
-            "upOf"  : null
+            "left": null,
+            "right": 1,
+            "down" : null,
+            "up"  : null
         },
         "background" : "countryBackground",
         "backgroundFrame" : null,
         "doors" : [
             {
-                "name" : "leftDoor",
-                "connectsTo" : "leftOf",
+                "name" : "rightDoor",
+                "connectsTo" : "right",
                 "assetName" : "door",
                 "position" : {
-                    "x" : 0,
-                    "y" : 300                    
-                }
+                    "x" : 940,
+                    "y" : 530                    
+                },
+                "size" : { "x" : 70, "y" : 100 }
             }
         ],
         "walls" : [
             {
                 "name" : "leftWall",
-                "assetName" : "wallTexture",
+                "assetName" : "simpleTile",
                 "type" : "tileSprite",
                 "position" : {
-                    "x" : 0,
+                    "x" : 25,
                     "y" : 0
                 },
                 "height" : 600,
                 "width" : 20
+            },
+            {
+                "name" : "rightWall",
+                "assetName" : "simpleTile",
+                "position" : {
+                    "x" : 950,
+                    "y" : 0
+                },
+                "height" : 600,
+                "width" : 20
+            },
+            {
+                "name" : "floor",
+                "assetName" : "simpleTile",
+                "position" : {
+                    "x" : 0,
+                    "y" : 550
+                },
+                "height" : 20,
+                "width" : 1000                
             }
         ],
         "items" : [
@@ -44,7 +65,7 @@
                     "x" : 0,
                     "y" : 600
                 },
-                "group" : "treesForground",
+                "group" : "treesForeground",
                 "physical" : false
             },
             {
@@ -74,8 +95,8 @@
                 "assetName" : "rock",
                 "physical" : true,
                 "position" : {
-                    "x" : 800,
-                    "y" : 500
+                    "x" : 400,
+                    "y" : 550
                 },
                 "group" : "objects",
                 "immovable" : true,
@@ -94,7 +115,14 @@
                 "group" : "actors",
                 "physical" : true,
                 "controllable" : true,
-                "facing" : "right"
+                "facing" : "right",
+                "animations" : {
+                    "walk" : ["simpleWalk",6]
+                },
+                "dimensions" : {
+                    "width" : 100,
+                    "height" : 100
+                }
             },
             {
                 "name" : "bill",
@@ -110,5 +138,101 @@
             }
 
         ]            
+    },
+    {
+        "id" : 1,
+        "name" : "room2",
+        "connections" : {
+            "left" : 0,
+            "right" : null,
+            "down" : null,
+            "up" : null
+        },
+        "background" : "simpleTile",
+        "backgroundFrame" : null,
+        "doors" : [
+            {
+                "name" : "leftDoor",
+                "connectsTo" : "left",
+                "assetName" : "door",
+                "position" : {
+                    "x" : 60,
+                    "y" : 530
+                },
+                "size" : { "x" : 70, "y" : 100 }
+            },
+            {
+                "name" : "rightDoor",
+                "connectsTo" : "left",
+                "assetName" : "door",
+                "position" : {
+                    "x" : 960,
+                    "y" : 530
+                },
+                "size" : { "x" : 70, "y" : 100}
+            }
+        ],
+        "walls" : [
+            {
+                "name" : "leftWall",
+                "assetName" : "simpleTile",
+                "type" : "tileSprite",
+                "position" : {
+                    "x" : 25,
+                    "y" : 0
+                },
+                "height" : 600,
+                "width" : 20
+            },
+            {
+                "name" : "rightWall",
+                "assetName" : "simpleTile",
+                "position" : {
+                    "x" : 950,
+                    "y" : 0
+                },
+                "height" : 600,
+                "width" : 20
+            },
+            {
+                "name" : "floor",
+                "assetName" : "simpleTile",
+                "position" : {
+                    "x" : 0,
+                    "y" : 550
+                },
+                "height" : 20,
+                "width" : 1000                
+            }
+        ],
+        "items" : [
+            {
+                "name" : "tree1",
+                "assetName" : "tree",
+                "frame" : 49,
+                "position" : {
+                    "x" : 0,
+                    "y" : 600
+                },
+                "group" : "treesForeground",
+                "physical" : false
+            },
+            {
+                "name" : "tree2",
+                "assetName" : "tree",
+                "frame" : 34,
+                "position" : {
+                    "x" : 550,
+                    "y" : 550
+                },
+                "group" : "treesBackground",
+                "physical" : false
+                
+            }
+            
+        ],
+        "actors" : [
+
+        ]
     }
 ]
