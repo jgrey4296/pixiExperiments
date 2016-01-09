@@ -13,6 +13,7 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
         this.anchor.setTo(.5,1);
         this.width = width || this.width;
         this.height = height || this.height;
+        this.jumpTimer = 0;
         
         if(this.facing === "left") this.flip();
         
@@ -62,15 +63,15 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
     
     Actor.prototype.move = function(direction,strength){
         if(direction === undefined){
-            this.body.velocity.x *= 0.9;
-            this.body.velocity.y *= 0.9;
+            this.body.velocity.x *= 0.5;
         }
         if(strength === undefined) strength = 150;
         
         if(direction === 'down'){
             this.body.velocity.y += strength;
-        }else if(direction === 'up'){
-            this.body.velocity.y -= strength;
+        }else if(direction === 'up' &&  this.game.time.now > this.jumpTimer){
+            this.body.velocity.y = -250;
+            this.jumpTimer = this.game.time.now + 750;
         }else if(direction === 'right'){
             this.body.velocity.x += strength;
             this.setupAnimation('walk',this.registeredAnimations['walk']);

@@ -10,7 +10,7 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         
         this.game = game;
 
-        this.gravityAmnt = 1000;
+        this.gravityAmnt = 350;
         //Current State info:
         this.currentRoom = null;
         this.controllableActor = null;
