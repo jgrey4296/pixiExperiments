@@ -4,8 +4,9 @@ define(['underscore','phaser'],function(_){
     };
 
     Boot.prototype.preload = function(){
-        //load a loading bar
+        //load a loading bar image
         this.game.load.image("loadImage","data/loadImage.png");
+        //Turn on for debugging:
         //this.game.time.advancedTiming = true;
     };
 

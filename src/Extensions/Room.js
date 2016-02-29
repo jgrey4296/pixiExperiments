@@ -19,24 +19,13 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
 
         //Build the room:
         //walls
-        description.walls.forEach(function(d){
-            this.buildWall(d);
-        },this);
+        description.walls.forEach(d=>this.buildWall(d));
         // //doors
-        description.doors.forEach(function(d){
-            this.buildDoor(d);
-        },this);
-
+        description.doors.forEach(d=>this.buildDoor(d));
         //items
-        description.items.forEach(function(d){
-            console.log(d);
-            this.buildItem(d);
-        },this);
-        
+        description.items.forEach(d=>this.buildItem(d));
         //actors
-        description.actors.forEach(function(d){
-            this.buildActor(d);
-        },this);
+        description.actors.forEach(d=>this.buildActor(d));
 
         
         // //todo:build the floor, ceiling, and walls

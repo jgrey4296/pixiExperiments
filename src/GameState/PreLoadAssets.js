@@ -7,6 +7,7 @@ define(['underscore','json!data/assets.json','phaser'],function(_,assets){
 
     PreLoadAssets.prototype.preload = function(){
         console.log("Preloading");
+        //Load everything speciied in the assets json
         assets.forEach(function(asset){
             if(asset.type === "image"){
                 this.game.load.image(asset.name,"data/"+asset.fileName);

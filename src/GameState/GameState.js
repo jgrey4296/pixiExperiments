@@ -9,7 +9,6 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.physicsType = Phaser.Physics.ARCADE;
         
         this.game = game;
-
         this.gravityAmnt = 350;
         //Current State info:
         this.currentRoom = null;
@@ -72,7 +71,6 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                 this.game.world.add(newRoom);
             }
         },this);
-
 
         //set the controllable character:
         var actors = _.values(this.currentRoom.actors);
