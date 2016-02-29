@@ -1,5 +1,5 @@
 
-define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble){
+define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
 
     var Actor = function(game,x,y,key,frame,name,facing,controllable,width,height){
         console.log(name);

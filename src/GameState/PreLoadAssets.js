@@ -1,4 +1,4 @@
-define(['underscore','json!data/assets.json','phaser'],function(_,assets){
+define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser){
 
     var PreLoadAssets = function(game){
         console.log("Preload ctor:",game);

@@ -1,36 +1,30 @@
 ({
     //http://www.sitepoint.com/building-library-with-requirejs/
-    baseUrl: "./src",
+    baseUrl: "./",
     paths : {
-        requireLib : "../node_modules/requirejs/require",
-        underscore : "../libs/underscore-min",
-        d3 : "../libs/d3.min",
-        Parse : "Parse/Parse",
-        GraphNode : "Node/GraphNode",
-        //CLI
-        HelpCLI : "CLI/HelpCLI",
-        MainCommandCLI : "CLI/MainCommandCLI",
-        //Shell
-        Shell : "Shell",
-        //Rete
-        Rete : "../libs/Rete.min"
-
+        requireLib : "node_modules/requirejs/require",
+        underscore : "libs/underscore-min",
+        //phaser
+        phaser : 'libs/phaser.min',
+        pixi : 'libs/pixi',
+        text : 'libs/text',
+        json : "libs/json",
     },
     shim: {
-        underscore : {
-            exports : "_"
+        'phaser' : {
+            exports : 'Phaser'
         }
     },
-    exclude : ['underscore'],
+    exclude : ['underscore','phaser','pixi'],
     //keepAmdefine : true,
-    include : ['../node_modules/almond/almond','Shell'],
+    include : ['node_modules/almond/almond','src/phaserGame','phaser'],
     //cjsTranslate : true,
-    name : "Shell",
-    insertRequire : [ "Shell"],
-    out: "./libs/Shell.min.js",
+    name : "src/phaserGame",
+    //insertRequire : [ "src/phaserGame"],
+    out: "./minified/phaserMain.min.js",
     optimize: "none",
     wrap : {
         startFile : "startWrap.js",
-        end : "define('underscore',function() { return _; }); return require('Shell'); }));"
+        end : "define('underscore',function() { return _; }); \ndefine('phaser',function(){return Phaser; }); \nreturn require('src/phaserGame'); }));"
     },
-})
+});

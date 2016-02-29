@@ -1,4 +1,4 @@
-define(['underscore','phaser'],function(_){
+define(['underscore','phaser'],function(_,Phaser){
 
     var Door = function(game,x,y,key,name,connection){
         Phaser.Sprite.call(this,game,x,y,key);

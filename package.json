@@ -1,0 +1,24 @@
+{
+  "name": "phasergame",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgrey4296/pixiExperiments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgrey4296/pixiExperiments/issues"
+  },
+  "homepage": "https://github.com/jgrey4296/pixiExperiments#readme",
+  "dependencies": {
+    "almond": "^0.3.1",
+    "requirejs": "^2.1.22",
+    "underscore": "^1.8.3"
+  }
+}

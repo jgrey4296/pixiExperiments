@@ -1,5 +1,5 @@
 
-define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door){
+define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door,Phaser){
 
     var Room = function(game,description){
         Phaser.Group.call(this,game,null,description.name);

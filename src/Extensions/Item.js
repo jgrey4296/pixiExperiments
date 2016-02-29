@@ -1,5 +1,5 @@
 
-define(['underscore','phaser'],function(_){
+define(['underscore','phaser'],function(_,Phaser){
 
     var Item = function(game,x,y,key,frame,name){
         console.log(x,y,key,frame,name);

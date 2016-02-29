@@ -1,8 +1,8 @@
-define(['underscore','phaser'],function(_){
+define(['underscore','phaser'],function(_,Phaser){
 
     var RoomState = function(game,roomDescription){
         //save the room description
-    }
+    };
 
     RoomState.prototype.preload = function(){
 

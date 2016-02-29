@@ -1,8 +1,16 @@
-define(['underscore','phaser'],function(_){
-
+/**
+   @module PhaserGame/GameState/Boot
+ */
+define(['underscore','phaser'],function(_,Phaser){
+    /**
+       @alias module:PhaserGame/GameState/Boot
+     */
     var Boot = function(game){
     };
 
+    /**
+       @method preload
+     */
     Boot.prototype.preload = function(){
         //load a loading bar image
         this.game.load.image("loadImage","data/loadImage.png");
@@ -10,6 +18,7 @@ define(['underscore','phaser'],function(_){
         //this.game.time.advancedTiming = true;
     };
 
+    /** @method create */
     Boot.prototype.create = function(){
         console.log("Booting");
         //add the loading bar to the screen
@@ -24,11 +33,12 @@ define(['underscore','phaser'],function(_){
         this.loadBarTween.start();
         //this.game.state.start('PreLoadAssets');
     };
-
+    /** method update */
     Boot.prototype.update = function(){
 
     };
 
+    /** @method render */
     Boot.prototype.render = function(){
         //this.game.debug.text(this.game.time.fps || '--', 2, 14, "#ffffff");
         //console.log("FPS:",game.time.fps);

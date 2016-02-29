@@ -1,6 +1,6 @@
 //From http://jsfiddle.net/lewster32/81pzgs4z/
 
-define(['underscore','phaser'],function(_){
+define(['underscore','phaser'],function(_,Phaser){
 
     var SpeechBubble = function(game,x,y,width,text){
         Phaser.Sprite.call(this,game,x,y);
