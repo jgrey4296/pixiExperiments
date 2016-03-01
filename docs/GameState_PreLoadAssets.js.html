@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: GameState/Boot.js</title>
+    <title>JSDoc: Source: GameState/PreLoadAssets.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: GameState/Boot.js</h1>
+    <h1 class="page-title">Source: GameState/PreLoadAssets.js</h1>
 
     
 
@@ -26,57 +26,52 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>define(['underscore','phaser'],function(_,Phaser){
+            <pre class="prettyprint source linenums"><code>define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser){
     /**
-       The Boot State
+       Preload Assets
        @constructor
        @param game
-       @alias GameStates/Boot
+       @alias GameStates/PreLoadAssets
        @implements Phaser.State
      */
-    var Boot = function(game){
+    var PreLoadAssets = function(game){
+        console.log("Preload ctor:",game);
+        this.game = game;
     };
 
     /**
-       Load any images needed for the state
+       Load everything required, from data/asset.json
        @method
      */
-    Boot.prototype.preload = function(){
-        //load a loading bar image
-        this.game.load.image("loadImage","data/loadImage.png");
-        //Turn on for debugging:
-        //this.game.time.advancedTiming = true;
-    };
-
-    /** Create the state, rendering a loading bar
-        @method  
-    */
-    Boot.prototype.create = function(){
-        console.log("Booting");
-        //add the loading bar to the screen
-        //Transition to next state
-        this.loadBar = this.add.sprite(0,this.game.height/2,'loadImage');
-        this.loadBar.anchor.setTo(0.5,0.5);
-        this.loadBarTween = this.game.add.tween(this.loadBar).to({x:this.game.width},
-                                                                 1000, Phaser.Easing.Quadratic.InOut, false);
-        this.loadBarTween.onComplete.add(function(){
-            this.game.state.start('PreLoadAssets');
+    PreLoadAssets.prototype.preload = function(){
+        console.log("Preloading");
+        //Load everything speciied in the assets json
+        assets.forEach(function(asset){
+            if(asset.type === "image"){
+                this.game.load.image(asset.name,"data/"+asset.fileName);
+            }else if(asset.type === "spritesheet"){
+                this.game.load.spritesheet(asset.name,"data/"+asset.fileName,asset.frames.x,asset.frames.y);
+            }else if(asset.type === "bitmapfont"){
+                this.game.load.bitmapFont(asset.name,asset.url,null,asset.data);
+            }else{
+                console.log("Unknown asset type: ",asset);
+            }
         },this);
-        this.loadBarTween.start();
-        //this.game.state.start('PreLoadAssets');
+        console.log("Loaded:",assets);
     };
 
-    Boot.prototype.update = function(){
+    /**
+       Starts on completion
+     */
+    PreLoadAssets.prototype.create = function(){
+        //Everything has been loaded, go to the actual game
+        this.game.state.start('GameState');
     };
 
-    Boot.prototype.render = function(){
-        //this.game.debug.text(this.game.time.fps || '--', 2, 14, "#ffffff");
-        //console.log("FPS:",game.time.fps);
-
+    PreLoadAssets.prototype.update = function(){
     };
 
-    
-    return Boot;
+    return PreLoadAssets;
 });
 </code></pre>
         </article>

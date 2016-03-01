@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: Extensions/Item.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,45 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: Extensions/Item.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+define(['underscore','phaser'],function(_,Phaser){
 
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
+    /**
+       An Item component
+       @constructor
+       @param game
+       @param x
+       @param y
+       @param key
+       @param frome
+       @param name
+       @alias Item
+       @augments Phaser.Sprite
+     */
+    var Item = function(game,x,y,key,frame,name){
+        console.log(x,y,key,frame,name);
+        Phaser.Sprite.call(this,game,x,y,key,frame);
+        this.name = name;
+    };
+    Item.prototype = Object.create(Phaser.Sprite.prototype);
+    Item.prototype.constructor = Item;
 
 
     
-
-
-
-
-
+    return Item;
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

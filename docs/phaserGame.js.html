@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: phaserGame.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,44 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: phaserGame.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>define(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/GameState/GameState','phaser'],function(_,Boot,PreLoadAssets,GameState,Phaser){
 
+    /**
+       The main class that encapsulates the entire game
+       @constructor
+       @param xSize
+       @param ySize
+       @param domElement
+       @exports PhaserGame
+     */
+    var PhaserGame = function(xSize,ySize,domElement){
+        this.game = new Phaser.Game(xSize,ySize,Phaser.AUTO,domElement);
 
-    <h3> </h3>
+        //States to add: boot, preload, GameState
+        //TODO: load game states parameterised from the scene json?
+        this.game.state.add('Boot',Boot);
+        this.game.state.add('PreLoadAssets',PreLoadAssets);
+        this.game.state.add('GameState',GameState);
+        
+        //Global stuff to set:
+        //game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.game.state.start('Boot');
+    };
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    return PhaserGame;
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

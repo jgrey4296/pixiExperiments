@@ -1,10 +1,20 @@
 define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser){
-
+    /**
+       Preload Assets
+       @constructor
+       @param game
+       @alias GameStates/PreLoadAssets
+       @implements Phaser.State
+     */
     var PreLoadAssets = function(game){
         console.log("Preload ctor:",game);
         this.game = game;
     };
 
+    /**
+       Load everything required, from data/asset.json
+       @method
+     */
     PreLoadAssets.prototype.preload = function(){
         console.log("Preloading");
         //Load everything speciied in the assets json
@@ -22,15 +32,16 @@ define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser)
         console.log("Loaded:",assets);
     };
 
+    /**
+       Starts on completion
+     */
     PreLoadAssets.prototype.create = function(){
         //Everything has been loaded, go to the actual game
         this.game.state.start('GameState');
     };
 
     PreLoadAssets.prototype.update = function(){
-
     };
-
 
     return PreLoadAssets;
 });

@@ -1,24 +1,29 @@
 define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser'],function(scene,_,SpeechBubble,Actor,Room,Phaser){
 
     /**
-       @class GameState
+       Main state of a game. In this case, 2d side scroll platform like.
        @constructor
-       @purpose main state of a game. In this case, 2d side scroll platform like.
+       @alias GameStates/GameState
+       @implements Phaser.State
      */
     var GameState = function(game,scene){
+        /** The physics type of the game */
         this.physicsType = Phaser.Physics.ARCADE;
         
         this.game = game;
+        /** The amount of gravity */
         this.gravityAmnt = 350;
-        //Current State info:
+        /** The Current room the player is located in */
         this.currentRoom = null;
+        /** The Current actor the player controls */
         this.controllableActor = null;
 
-        //All available info:
+        /** All Rooms */
         this.rooms = {};
+        /** All Actors */
         this.actors = {};
 
-        //Reasoning / AI
+        /** The Reasoning System */
         this.rete = null;
 
         if(scene !== undefined){
@@ -27,32 +32,24 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
     };
 
     /**
-       @class GameState
-       @method init
-       @purpose called on creation, after ctor
+       Called on creation, after ctor
+       @method 
      */
     GameState.prototype.init = function(){
         console.log("GameState init");
         //Setup the reasoning system / RETE
     };
 
-    /**
-       @class GameState
-       @method preload
-       @purpose loads assets
-     */
     GameState.prototype.preload = function(){
         console.log("GameState preload");
         //this.scene.forEach(function(room){
             //create the room groups and store them
         //});
-        
     };
 
     /**
-       @class GameState
-       @method create
-       @purpose called when this state becomes active
+       Called when this state becomes active
+       @method
      */
     GameState.prototype.create = function(){
         console.log("GameState create");
@@ -76,16 +73,13 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         var actors = _.values(this.currentRoom.actors);
         this.controllableActor = _.find(_.values(actors),function(d){ return d.controllable === true; });
         console.log("set controllable actor to:",this.controllableActor);
-        
         //Set world boundaries
         //this.physics.arcade.setBounds(0,0,this.game.width,this.game.height-75);
-
     };
 
     /**
-       @class GameState
-       @method update
-       @purpose called each tick
+       Called each tick
+       @method
      */
     GameState.prototype.update = function(){
 
@@ -112,9 +106,8 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
     //------------------------------
     
     /**
-       @class GameState
-       @method buildRoom
-       @purpose takes a description of a room and instantiates it for display and game logic
+       Takes a description of a room and instantiates it for display and game logic
+       @method
      */
     
     GameState.prototype.buildRoom = function(room){
@@ -124,7 +117,9 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         return newRoom;
     };
 
-
+    /** Changes the current room, moving the controllable actor as well
+        @method
+     */
     GameState.prototype.changeRoom = function(room){
         if(this.currentRoom !== null){
             this.game.world.remove(this.controllableActor);

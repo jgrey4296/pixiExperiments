@@ -1,5 +1,13 @@
 define(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/GameState/GameState','phaser'],function(_,Boot,PreLoadAssets,GameState,Phaser){
 
+    /**
+       The main class that encapsulates the entire game
+       @constructor
+       @param xSize
+       @param ySize
+       @param domElement
+       @exports PhaserGame
+     */
     var PhaserGame = function(xSize,ySize,domElement){
         this.game = new Phaser.Game(xSize,ySize,Phaser.AUTO,domElement);
 

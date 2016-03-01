@@ -14,15 +14,10 @@ require.config({
     }
 });
 
-//Note: keep phaser as the last require, don't define it, let it be global
-/**
-   @module Phaser/Main
- */
 //require(['src/phaserGame'],function(PhaserGame){
 require(['minified/phaserMain.min'],function(PhaserGame){
     console.log("Phaser based game");
-
-    //Game Creation
+    //Create the overall game, with size and specified dom element
     var game = new PhaserGame(1000,600,'game-canvas');
     console.log(game);
 });

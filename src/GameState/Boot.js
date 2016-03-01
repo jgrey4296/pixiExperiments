@@ -1,15 +1,17 @@
-/**
-   @module PhaserGame/GameState/Boot
- */
 define(['underscore','phaser'],function(_,Phaser){
     /**
-       @alias module:PhaserGame/GameState/Boot
+       The Boot State
+       @constructor
+       @param game
+       @alias GameStates/Boot
+       @implements Phaser.State
      */
     var Boot = function(game){
     };
 
     /**
-       @method preload
+       Load any images needed for the state
+       @method
      */
     Boot.prototype.preload = function(){
         //load a loading bar image
@@ -18,7 +20,9 @@ define(['underscore','phaser'],function(_,Phaser){
         //this.game.time.advancedTiming = true;
     };
 
-    /** @method create */
+    /** Create the state, rendering a loading bar
+        @method  
+    */
     Boot.prototype.create = function(){
         console.log("Booting");
         //add the loading bar to the screen
@@ -33,12 +37,10 @@ define(['underscore','phaser'],function(_,Phaser){
         this.loadBarTween.start();
         //this.game.state.start('PreLoadAssets');
     };
-    /** method update */
-    Boot.prototype.update = function(){
 
+    Boot.prototype.update = function(){
     };
 
-    /** @method render */
     Boot.prototype.render = function(){
         //this.game.debug.text(this.game.time.fps || '--', 2, 14, "#ffffff");
         //console.log("FPS:",game.time.fps);
