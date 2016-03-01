@@ -84,5 +84,12 @@
         "type" : "image",
         "fileName" : "Door.png",
         "size" : { "x" : 32, "y" : 32 }
-    }    
+    },
+    {
+        "id" : 11,
+        "name" : "whiteTile",
+        "type" : "image",
+        "size" : {"x": 8, "y" : 8},
+        "fileName" : "whiteTile_8x8.png"
+    }
 ]

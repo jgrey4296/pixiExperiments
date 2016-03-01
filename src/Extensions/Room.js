@@ -1,4 +1,3 @@
-
 define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door,Phaser){
 
     /**
@@ -11,18 +10,24 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
      */
     var Room = function(game,description){
         Phaser.Group.call(this,game,null,description.name);
-
-        //Create the background:
+        /** id */
+        this.id = description.id;
+        
+        /** Background */
         var background = new Phaser.Sprite(this.game,0,0,description.background,description.backgroundFrame);
         background.width = this.game.width;
         background.height = this.game.height;
+        if(description.tint !== undefined){
+            background.tint = parseInt(description.tint,16);
+            console.log("Set background tint to:",background.tint);
+        }
         this.add(background);
-        
-        this.id = description.id;
+
+        /** Connections to other rooms */
         this.connections = description.connections;
-        //this.width = this.game.width;
-        //this.height = this.game.height;
+        /** Actors in the room */
         this.actors = {};
+        /** Draw groups in the room */
         this.groups = {};
 
         //Build the room:
@@ -72,24 +77,28 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
      */
     Room.prototype.buildWall = function(wallDesc){
         if(this.groups['walls'] === undefined) this.groups['walls'] = new Phaser.Group(this.game,this,'walls');
+        var x = wallDesc.position.x * this.game.width,
+            y = wallDesc.position.y * this.game.height,
+            height = wallDesc.height * this.game.height,
+            width = wallDesc.width * this.game.width;
+        console.log(this.game.width,this.game.height);
 
         //Each wall is a tilesprite stretch for the defined size
-        var tileSprite = new Phaser.TileSprite(this.game,wallDesc.position.x,wallDesc.position.y,
-                                               wallDesc.width,wallDesc.height,wallDesc.assetName,wallDesc.frame);
+        var tileSprite = new Phaser.TileSprite(this.game,x,y,width,height,wallDesc.assetName,wallDesc.frame);
+        if(wallDesc.tint !== undefined){
+            tileSprite.tint = parseInt(wallDesc.tint,16);
+        }
         this.groups['walls'].add(tileSprite);
 
         this.game.physics.enable(tileSprite);
         tileSprite.body.immovable = true;
         tileSprite.body.allowGravity = false;
-        
-        
     };
 
     /** Builds a {@link Door} in the room
         @method
      */
     Room.prototype.buildDoor = function(d){
-        console.groupCollapsed();
         
         console.log("Building door:",d);
         d.group = "doors";
@@ -121,7 +130,6 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         @method
      */
     Room.prototype.buildItem = function(d){
-        console.groupCollapsed();
         console.log("building Item:",d);
         //if there is no group defined:
         if(d.group === undefined) d.group = "default";
@@ -156,8 +164,6 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         @method
      */
     Room.prototype.buildActor = function(d){
-        console.groupCollapsed();
-        
         //TODO: customise the group.classType for custom classes
         var actor = new Actor(this.game,d.position.x,d.position.y,d.assetName,d.frame,d.name,d.facing,d.controllable,d.width,d.height);
 
@@ -205,23 +211,20 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
                     //get the room using the door's connection
                     var room = roomRef.getRoomFromDoor(door);
                     roomRef.game.state.getCurrentState().changeRoom(room);
-                 
                 }
             });
         }
+        //Collide objects with the walls
         this.game.physics.arcade.collide(this.groups.walls,this.groups.objects);
         
         //run AI for each actor
-        _.values(this.actors).forEach(function(d){
-            if(!d.controllable){
-                d.update();
-            }
-        });
-
+        _.values(this.actors).forEach(d=>d.update());
         
         //perform movements
 
         //perform interactions
+
+        
 
     };
 

@@ -1,23 +1,25 @@
 define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser'],function(scene,_,SpeechBubble,Actor,Room,Phaser){
-
     /**
-       Main state of a game. In this case, 2d side scroll platform like.
+       Main state of a game. In this case emulating BoI, loaded from data/scene1.json
        @constructor
        @alias GameStates/GameState
        @implements Phaser.State
      */
-    var GameState = function(game,scene){
+    var GameState = function(game){
         /** The physics type of the game */
         this.physicsType = Phaser.Physics.ARCADE;
-        
+        /** A Reference to the game */
         this.game = game;
         /** The amount of gravity */
-        this.gravityAmnt = 350;
+        this.gravityAmnt = 0;
         /** The Current room the player is located in */
         this.currentRoom = null;
         /** The Current actor the player controls */
         this.controllableActor = null;
 
+        /** The FPS of the game */
+        this.fps = 30;
+        
         /** All Rooms */
         this.rooms = {};
         /** All Actors */
@@ -36,24 +38,19 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
        @method 
      */
     GameState.prototype.init = function(){
-        console.log("GameState init");
+        console.log("GameState init:",scene);
         //Setup the reasoning system / RETE
     };
 
-    GameState.prototype.preload = function(){
-        console.log("GameState preload");
-        //this.scene.forEach(function(room){
-            //create the room groups and store them
-        //});
-    };
 
     /**
-       Called when this state becomes active
+       Setup the gamestate, setting the fps, physics and gravity,
+       Registers cursor keys, and creates the actor and the defined rooms.
        @method
      */
     GameState.prototype.create = function(){
         console.log("GameState create");
-        this.game.time.desiredFps = 30;
+        this.game.time.desiredFps = this.fps;
         this.cursors = this.game.input.keyboard.createCursorKeys();
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -63,34 +60,38 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         //and add the origin room
         scene.forEach(function(d){
             var newRoom = this.buildRoom(d);
+            //Only add the current room which is the origin, to the world
             if(d.origin){
                 this.currentRoom = newRoom;
                 this.game.world.add(newRoom);
             }
         },this);
 
-        //set the controllable character:
+        //Set the controllable character from the current room:
         var actors = _.values(this.currentRoom.actors);
-        this.controllableActor = _.find(_.values(actors),function(d){ return d.controllable === true; });
+        this.controllableActor = _.find(_.values(actors),d=>d.controllable === true);
         console.log("set controllable actor to:",this.controllableActor);
+        
         //Set world boundaries
-        //this.physics.arcade.setBounds(0,0,this.game.width,this.game.height-75);
+        this.physics.arcade.setBounds(0,0,this.game.width,this.game.height);
     };
 
     /**
-       Called each tick
+       Called each tick, updating the room and moving the controllable actor
        @method
      */
     GameState.prototype.update = function(){
-
+        //Update the room
         this.currentRoom.update();
-        if(this.controllableActor){
-            this.controllableActor.move();
         
+        //Call movement control on the controllable actor:
+        if(this.controllableActor){
+            //this.controllableActor.move();
             //get the cursor keys, move the playable character as necessary
             //get interaction key
             //run reasoning for each character, register actions for them to perform
             if(this.cursors.up.isDown){
+                console.log(this.controllableActor);
                 this.controllableActor.move('up');
             }else if(this.cursors.down.isDown){
                 this.controllableActor.move('down');
@@ -107,6 +108,7 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
     
     /**
        Takes a description of a room and instantiates it for display and game logic
+       @see {Room}
        @method
      */
     
@@ -138,5 +140,14 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         console.log("Current Room:",this.currentRoom);
     };
 
+    /**
+       Utility render method for debugging:
+       @method
+     */
+    GameState.prototype.render = function(){
+        //this.game.debug.body(this.controllableActor);
+
+    };
+    
     return GameState;
 });

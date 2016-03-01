@@ -14,8 +14,8 @@ require.config({
     }
 });
 
-//require(['src/phaserGame'],function(PhaserGame){
-require(['minified/phaserMain.min'],function(PhaserGame){
+require(['src/phaserGame'],function(PhaserGame){
+//require(['minified/phaserMain.min'],function(PhaserGame){
     console.log("Phaser based game");
     //Create the overall game, with size and specified dom element
     var game = new PhaserGame(1000,600,'game-canvas');

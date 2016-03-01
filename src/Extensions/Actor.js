@@ -1,5 +1,5 @@
 
-define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
+define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,Phaser,util){
     /** Describes an actor, and all information related to it
         @constructor
         @param game,
@@ -36,6 +36,11 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
 
         //animations
         this.registeredAnimations = {};
+
+        /** Minimum Magnitude */
+        this.minMagnitude = 100;
+        /** Magnitude Dropbox */
+        this.magDrop = 0.7;
         
     };
     Actor.prototype = Object.create(Phaser.Sprite.prototype);
@@ -92,15 +97,15 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
     */
     Actor.prototype.move = function(direction,strength){
         if(direction === undefined){
-            this.body.velocity.x *= 0.5;
+            this.body.velocity.x *= 0.8;
         }
         if(strength === undefined) strength = 150;
         
         if(direction === 'down'){
             this.body.velocity.y += strength;
-        }else if(direction === 'up' &&  this.game.time.now > this.jumpTimer){
+        }else if(direction === 'up'){// &&  this.game.time.now > this.jumpTimer){
             this.body.velocity.y = -250;
-            this.jumpTimer = this.game.time.now + 750;
+            //this.jumpTimer = this.game.time.now + 750;
         }else if(direction === 'right'){
             this.body.velocity.x += strength;
             this.setupAnimation('walk',this.registeredAnimations['walk']);
@@ -115,8 +120,9 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
             }
         }
 
-        if(Math.abs(this.body.velocity.x) < 25){
+        if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
             this.animations.stop();
+            this.body.velocity.x = 0;
             //this.updateTexture(this.defaultTexture);
         }else{
             if(this.registeredAnimations['walk'] !== undefined){
@@ -130,11 +136,17 @@ define(['underscore','./SpeechBubble','phaser'],function(_,SpeechBubble,Phaser){
         @method
     */
     Actor.prototype.update = function(externalInformation){
-        if(this.body.velocity.x < 15){
-            console.log("Updating: ",this.name);
-            var moveDir = _.sample(['left','right'],1);
-            this.move(moveDir[0]);
+        //Generally trend towards 0
+        this.body.velocity.x *= this.magDrop;
+        this.body.velocity.y *= this.magDrop;
+
+        if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
+            this.body.velocity.setMagnitude(0);
         }
+                  
+        //     //console.log("Updating: ",this.name);
+        //     //var moveDir = _.sample(['left','right'],1);
+        //     //this.move(moveDir[0]);
 
     };
 
