@@ -11,6 +11,7 @@ define(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/Gam
     var PhaserGame = function(xSize,ySize,domElement){
         this.game = new Phaser.Game(xSize,ySize,Phaser.AUTO,domElement);
 
+        
         //Add available states to the game as a whole:
         this.game.state.add('Boot',Boot);
         this.game.state.add('PreLoadAssets',PreLoadAssets);

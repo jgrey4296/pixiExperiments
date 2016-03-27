@@ -5,7 +5,8 @@ require.config({
         pixi : 'libs/pixi',
         text : 'libs/text',
         json : "libs/json",
-        underscore : 'libs/underscore-min'
+        underscore : 'libs/underscore-min',
+        ClingoParser : "libs/ClingoParser"
     },
     shim: {
         'phaser' : {
@@ -18,6 +19,6 @@ require(['src/phaserGame'],function(PhaserGame){
 //require(['minified/phaserMain.min'],function(PhaserGame){
     console.log("Phaser based game");
     //Create the overall game, with size and specified dom element
-    var game = new PhaserGame(1000,600,'game-canvas');
+    var game = new PhaserGame(1000,800,'game-canvas');
     console.log(game);
 });
