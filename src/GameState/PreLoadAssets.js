@@ -7,7 +7,6 @@ define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser)
        @implements Phaser.State
      */
     var PreLoadAssets = function(game){
-        console.log("Preload ctor:",game);
         this.game = game;
     };
 

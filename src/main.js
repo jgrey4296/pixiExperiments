@@ -6,7 +6,9 @@ require.config({
         text : 'libs/text',
         json : "libs/json",
         underscore : 'libs/underscore-min',
-        ClingoParser : "libs/ClingoParser"
+        ClingoParser : "libs/ClingoParser",
+        Rete : "libs/Rete.min"
+        
     },
     shim: {
         'phaser' : {

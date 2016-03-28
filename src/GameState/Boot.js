@@ -7,6 +7,7 @@ define(['underscore','phaser'],function(_,Phaser){
        @implements Phaser.State
      */
     var Boot = function(game){
+        this.game = game;
     };
 
     /**
