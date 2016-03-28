@@ -61,10 +61,14 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         tileSprite.body.allowGravity = false;
     };
 
-    /** Updates the room, running collisions within the room
+    Room.prototype.update = function(){
+        //Prefer manualUpdate
+    };
+    
+    /** Manually Updates the room, running collisions within the room
         @method
     */
-    Room.prototype.update = function(){
+    Room.prototype.manualUpdate = function(){
         var roomRef = this;
         //check for collisions
         // if(this.groups.actors !== undefined){
@@ -100,6 +104,12 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
     };
 
 
+    Room.prototype.addAndToGroup = function(groupName,name,object){
+        if(this.groups[groupName] === undefined){ this.groups[groupName] = {}; }
+        this.groups[groupName][name] = object;
+        this.add(object);
+    };
+    
     return Room;
 
 });

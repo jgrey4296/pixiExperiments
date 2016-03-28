@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazePaths,ClingoParser){
+define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser){
     var mazeSize = 8;
     
     /**
@@ -19,23 +19,39 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.currentRoom = null;
         /** The Current actor the player controls */
         this.controllableActor = null;
-
         /** The FPS of the game */
         this.fps = 30;
-        
         /** All Rooms */
         this.maze = Array(mazeSize).fill(0).map(d=>Array(mazeSize).fill(0).map(d=>null));
         /** Maze paths loaded from clingo output as answer sets of fact tuples */
-        this.mazePaths = ClingoParser(mazePaths,'used');
+        this.mazeSets = ClingoParser(mazeSets,'used');
         //room size:
         this.roomSize = [this.game.width,this.game.height];
+        //room movement details:
+        this.roomMovement = {
+            //the current room indices for the maze
+            current : [0,0],
+            //key listeners
+            left : null,
+            right: null,
+            up : null,
+            down : null,
+            //toggle for map view listener
+            showAll : null,
+            //whether the map toggle has been used recently
+            mapRecent : false,
+            //display the map view
+            showMap : false,
+            //moved recently toggle, for if the room has changed recently
+            movedRecently : false,
+        };
 
+        //cursor listeners
+        this.cursors = null;
+        
+        
         /** All Actors */
         this.actors = {};
-
-        /** The Reasoning System */
-        this.rete = null;
-        
         if(scene !== undefined){
             this.scene = scene;
         }
@@ -57,7 +73,6 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
        @method
      */
     GameState.prototype.create = function(){
-        console.log("GameState create");
         this.game.time.desiredFps = this.fps;
         this.cursors = this.game.input.keyboard.createCursorKeys();
         this.cameraOffset = [this.game.width/2,this.game.height/2];
@@ -65,31 +80,26 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.gravityAmnt;
-        
-        //set the boundaries of the game world:
-        //larger than the world itself so the camera can centre on a room
-        //this.game.world.setBounds(0,0,(mazeSize+4) * this.roomSize[0],(mazeSize+4) * this.roomSize[1]);
-        //Set world boundaries
-        this.physics.arcade.setBounds(0,0,(mazeSize+1)*this.roomSize[0],(mazeSize+1)*this.roomSize[1]);
+        this.physics.arcade.setBounds(0,0,(mazeSize+1)*this.roomSize[0],(mazeSize+1)*this.roomSize[1]);        
 
-        //select an answer set and build room around from it
-        _.sample(this.mazePaths).forEach(function(d){
+        //select an answer set maze base and build rooms for it
+        _.sample(this.mazeSets).forEach(function(d){
             if(this.maze[parseInt(d[0])][parseInt(d[1])] !== null){
-                //room has already been built
+                //room has already been built, don't bother
                 return;
             }
+            //create a new room
             let randomRoomDescription = _.sample(scene),
                 position = this.gridPositionToWorldPosition(parseInt(d[0]), parseInt(d[1])),
                 size = this.roomSize,
                 newRoom = this.buildRoom(randomRoomDescription,position,size);
+            //store the room
             this.maze[parseInt(d[0])][parseInt(d[1])] = newRoom;
         },this);
 
         //Set the camera to the first room:
         this.game.camera.bounds = null;
         this.game.camera.setSize(this.roomSize[0],this.roomSize[1]);
-        this.roomMovement = {};
-        this.roomMovement.current = [0,0];
         this.centreCameraOnCurrentRoom();
 
         //Register room movement presses
@@ -98,8 +108,23 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.roomMovement.up = this.game.input.keyboard.addKey(Phaser.Keyboard.I);
         this.roomMovement.down = this.game.input.keyboard.addKey(Phaser.Keyboard.K);
         this.roomMovement.showAll = this.game.input.keyboard.addKey(Phaser.Keyboard.M);
+
+        //Create an add the controllable actor:
+        this.controllableActor = new Actor(this.game,
+                                           this.roomSize[0]/8,
+                                           this.roomSize[1]/8,
+                                           'pig',0,
+                                           'anActor', 'right',true,
+                                           100,100);
+        this.game.physics.enable(this.controllableActor);
         
-        //this.game.input.keyboard.addKeyCapture([Phaser.Keyboard.J,Phaser.Keyboard.L,Phaser.Keyboard.I,Phaser.Keyboard.K]);
+        //add the CA to the current room
+        let x = this.roomMovement.current[0],
+            y = this.roomMovement.current[1],
+            room = this.maze[x][y];
+        if(room){
+            room.addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
+        }        
     };
 
     /**
@@ -107,8 +132,11 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
        @method
      */
     GameState.prototype.update = function(){
-        //Update the room
-
+        //Update  only the current room
+        if(this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]] !== null){
+            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].manualUpdate();
+        }
+        
         //**** ACTOR CONTROL
         if(this.controllableActor){
             //this.controllableActor.move();

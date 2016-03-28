@@ -5,8 +5,8 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         @param game,
         @param x
         @param y
-        @param key
-        @param frame
+        @param key The Asset image
+        @param frame The Frame of the asset
         @param name
         @param facing
         @param controllable
