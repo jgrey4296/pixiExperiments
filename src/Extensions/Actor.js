@@ -29,6 +29,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         this.height = height || this.height;
         this.jumpTimer = 0;
         this.defaultStrength = 250;
+        this.isInactive = false;
         
         if(this.facing === "left") this.flip();
         
@@ -137,6 +138,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         @method
     */
     Actor.prototype.update = function(externalInformation){
+        console.log("Updating Actor:",this.name);
         //Generally trend towards 0
         this.body.velocity.x *= this.magDrop;
         this.body.velocity.y *= this.magDrop;
