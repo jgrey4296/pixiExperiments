@@ -164,41 +164,7 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         
     };
 
-        // if(this.groups.actors !== undefined){
-        //     this.game.physics.arcade.collide(this.groups.actors,this.groups.actors);
-        //     this.game.physics.arcade.collide(this.groups.actors,this.groups.objects);
-        //     this.game.physics.arcade.collide(this.groups.actors,this.groups.walls);
-        //     this.game.physics.arcade.collide(this.groups.actors,this.groups.doors,function(actor,door){
-        //         if(!actor.controllable){
-        //             //move the actor through the door
-        //             roomRef.game.world.remove(actor);
-        //             delete roomRef.actors[actor.name];
-        //             var room = roomRef.getRoomFromDoor(door);
-        //             room.addActor(actor);
-        //         }else{
-        //             //get the room using the door's connection
-        //             var room = roomRef.getRoomFromDoor(door);
-        //             roomRef.game.state.getCurrentState().changeRoom(room);
-        //         }
-        //     });
-        // }
-        // //Collide objects with the walls
-        // this.game.physics.arcade.collide(this.groups.walls,this.groups.objects);
-        
-        // //run AI for each actor
-        // _.values(this.actors).forEach(d=>d.update());
-        
-        //perform movements
-
-        //perform interactions
-
-
-    Room.prototype.addToGroup = function(groupName,name,object){
-        if(this.groups[groupName] === undefined){ this.groups[groupName] = {}; }
-        this.groups[groupName][name] = object;
-        this.add(object);
-    };
-
+    
     Room.prototype.switchActiveStatus = function(){
         this.isInactive = !this.isInactive;
         this.parent.bringToTop(this);
