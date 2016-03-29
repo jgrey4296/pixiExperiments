@@ -117,14 +117,15 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                                            'anActor', 'right',true,
                                            100,100);
         this.game.physics.enable(this.controllableActor);
+        this.game.world.add(this.controllableActor);
         
         //add the CA to the current room
         let x = this.roomMovement.current[0],
             y = this.roomMovement.current[1],
             room = this.maze[x][y];
-        if(room){
-            room.addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
-        }        
+        // if(room){
+        //     room.addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
+        // }        
     };
 
     /**
@@ -139,12 +140,12 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         
         //**** ACTOR CONTROL
         if(this.controllableActor){
+            this.controllableActor.update();
             //this.controllableActor.move();
             //get the cursor keys, move the playable character as necessary
             //get interaction key
             //run reasoning for each character, register actions for them to perform
             if(this.cursors.up.isDown){
-                console.log(this.controllableActor);
                 this.controllableActor.move('up');
             }else if(this.cursors.down.isDown){
                 this.controllableActor.move('down');
