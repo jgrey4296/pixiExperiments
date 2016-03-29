@@ -1,7 +1,8 @@
 require.config({
     baseUrl : '/',
     paths : {
-        phaser : 'libs/phaser.min',
+        //phaser : 'libs/phaser.min',
+        phaser : 'libs/phaser',
         pixi : 'libs/pixi',
         text : 'libs/text',
         json : "libs/json",
