@@ -15,14 +15,14 @@ define(['underscore','phaser'],function(_,Phaser){
 
         // Some sensible minimum defaults
         width = width || 27;
-        var height = 18;
+        let height = 18;
 
         // Set up our text and run our custom wrapping routine on it
         this.bitmapText = game.make.bitmapText(x + 12, y + 4, '8bitoperator', text, 22);
         SpeechBubble.wrapBitmapText(this.bitmapText, width);
 
         // Calculate the width and height needed for the edges
-        var bounds = this.bitmapText.getLocalBounds();
+        let bounds = this.bitmapText.getLocalBounds();
         if (bounds.width + 18 > width) {
             width = bounds.width + 18;
         }
@@ -44,7 +44,7 @@ define(['underscore','phaser'],function(_,Phaser){
         ];
 
         // Add all of the above to this sprite
-        for (var b = 0, len = this.borders.length; b < len; b++) {
+        for (let b = 0, len = this.borders.length; b < len; b++) {
             this.addChild(this.borders[b]);
         }
 
@@ -63,9 +63,9 @@ define(['underscore','phaser'],function(_,Phaser){
     SpeechBubble.prototype.constructor = SpeechBubble;
 
     SpeechBubble.wrapBitmapText = function (bitmapText, maxWidth) {
-        var words = bitmapText.text.split(' '), output = "", test = "";
+        let words = bitmapText.text.split(' '), output = "", test = "";
 
-        for (var w = 0, len = words.length; w < len; w++) {
+        for (let w = 0, len = words.length; w < len; w++) {
             test += words[w] + " ";
             bitmapText.text = test;
             bitmapText.updateText();
