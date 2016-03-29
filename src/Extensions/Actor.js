@@ -16,7 +16,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         @augments Phaser.Sprite
      */
     var Actor = function(game,x,y,key,frame,name,facing,controllable,width,height){
-        console.log(name);
+        console.log("Creating:",name);
         Phaser.Sprite.call(this,game,x,y,key,frame);
         this.name = name;
         this.defaultTexture = key;
@@ -28,6 +28,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         this.width = width || this.width;
         this.height = height || this.height;
         this.jumpTimer = 0;
+        this.defaultStrength = 250;
         
         if(this.facing === "left") this.flip();
         
@@ -40,7 +41,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         /** Minimum Magnitude */
         this.minMagnitude = 100;
         /** Magnitude Dropbox */
-        this.magDrop = 0.7;
+        this.magDrop = 0.5;
         
     };
     Actor.prototype = Object.create(Phaser.Sprite.prototype);
@@ -99,7 +100,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         if(direction === undefined){
             this.body.velocity.x *= 0.8;
         }
-        if(strength === undefined) strength = 150;
+        if(strength === undefined) strength = this.defaultStrength;
         
         if(direction === 'down'){
             this.body.velocity.y += strength;
