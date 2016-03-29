@@ -71,7 +71,13 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
             assetName : "whiteTile",
             tint : "1423FF",
         });
-        
+
+        // this.buildDoor({
+        //     position : { x : 0.5, y : 0.95},
+        //     size : 40,
+        //     linkToIndices : [this.indices[0],this.indices[1]+1],
+        //     assetName : "door"
+        // });
     };
     
     Room.prototype = Object.create(Phaser.Group.prototype);
@@ -85,7 +91,6 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
            position : { x : num, y : num }, //as % of room size
            size : { height : num, width : num }, //as % of room size
            assetName, frame, tint,
-           split : bool
            }
          */
         if(this.groups['walls'] === undefined) this.groups['walls'] = new Phaser.Group(this.game,this,'walls');
@@ -104,13 +109,35 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         this.game.physics.enable(tileSprite);
         tileSprite.body.immovable = true;
         tileSprite.body.allowGravity = false;
+        
     };
 
+    Room.prototype.buildDoor = function(indexPair){
+        if(this.groups['doors'] === undefined) {
+            this.groups['doors'] = new Phaser.Group(this.game,this,'doors');
+        }
+        //console.log("Building Door:",indexPair,this.indices);
+        //calculate the x and y based on relation between indexPair and this.indices
+        let doorPosition = [indexPair[0]-this.indices[0],indexPair[1]-this.indices[1]];
+        //horiz: [+-1,0], vertical:[0,+-1]
+        let xOffset = this.size.width * 0.05,
+            yOffset = this.size.height * 0.05,
+            x = doorPosition[0] === 0 ? 0.5 * this.size.width : doorPosition[0] < 0 ? 0 : this.size.width - xOffset,
+            y = doorPosition[1] === 0 ? 0.5 * this.size.height : doorPosition[1] < 0 ? 0 : this.size.height - yOffset;
+
+        let doorSprite = new Door(this.game,x,y,"door",indexPair);
+        this.groups['doors'].add(doorSprite);
+
+        this.game.physics.enable(doorSprite);
+        doorSprite.body.immovable = true;
+        doorSprite.body.allowGravity = false;
+    };
+
+    
     /** Updates the room, running collisions within the room
         @method
     */
     Room.prototype.update = function(){
-        console.log("Updating:", this.indices);
         //check for collisions between elements in the room
 
         //check for collisions between the controllable actor and items in this room
@@ -156,6 +183,19 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
 
     Room.prototype.switchActiveStatus = function(){
         this.isInactive = !this.isInactive;
+        //TODO: disable the physics for all elements in the room, or enable them
+    };
+
+    //Get the neighbour indices for the room:
+    //DOES NOT filter impossible coordinates
+    Room.prototype.getNeighbours = function(){
+        let transforms = [
+            [-1,0],[+1,0],
+            [0,-1],[0,+1]
+        ],
+            neighbourIndices = transforms.map(d=>[this.indices[0]+d[0],this.indices[1]+d[1]]);
+
+        return neighbourIndices;        
     };
     
     return Room;

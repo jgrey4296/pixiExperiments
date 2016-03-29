@@ -138,7 +138,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         @method
     */
     Actor.prototype.update = function(externalInformation){
-        console.log("Updating Actor:",this.name);
+        //console.log("Updating Actor:",this.name);
         //Generally trend towards 0
         this.body.velocity.x *= this.magDrop;
         this.body.velocity.y *= this.magDrop;

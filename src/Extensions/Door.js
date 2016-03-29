@@ -7,14 +7,13 @@ define(['underscore','phaser'],function(_,Phaser){
        @param x
        @param y
        @param key
-       @param name
        @param connection
        @alias Door
        @augments Phaser.Sprite
      */
-    var Door = function(game,x,y,key,name,connection){
+    var Door = function(game,x,y,key,connection){
+        //console.log("Creating door");
         Phaser.Sprite.call(this,game,x,y,key);
-        this.name = name;
         this.connection = connection;
     };
     Door.prototype = Object.create(Phaser.Sprite.prototype);
