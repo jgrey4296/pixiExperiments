@@ -19,7 +19,7 @@ define(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/Gam
         this.state.add('Boot',Boot);
         this.state.add('PreLoadAssets',PreLoadAssets);
         this.state.add('GameState',GameState);
-        
+
         //Start on a state:
         this.state.start('Boot');
     };

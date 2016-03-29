@@ -22,5 +22,4 @@ require(['src/phaserGame'],function(PhaserGame){
     console.log("Phaser based game");
     //Create the overall game, with size and specified dom element
     var game = new PhaserGame(1000,800,'game-canvas');
-    console.log(game);
 });
