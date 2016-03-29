@@ -9,11 +9,19 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
        @alias Room
        @augments Phaser.Group
      */
-    var Room = function(game,description,position,size){
+    var Room = function(game,description,position,size,indices){
         if(position === undefined) { position = [0,0]; }
         if(size === undefined) { size = [100,100]; }
+        if(indices === undefined) { indices = [-1,-1]; }
+        //Extend from Phaser.Group
         Phaser.Group.call(this,game,null,description.name);
 
+        //the indices of the room on the map
+        this.indices = indices;
+        
+        //Default to being inactive:
+        this.isInactive = true;
+        
         this.x = position[0];
         this.y = position[1];
         this.size = {
@@ -76,17 +84,18 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         /* wallDesc : {
            position : { x : num, y : num }, //as % of room size
            size : { height : num, width : num }, //as % of room size
-           assetName, frame, tint
+           assetName, frame, tint,
+           split : bool
            }
          */
         if(this.groups['walls'] === undefined) this.groups['walls'] = new Phaser.Group(this.game,this,'walls');
-        var x = wallDesc.position.x * this.size.width,
+        let x = wallDesc.position.x * this.size.width,
             y = wallDesc.position.y * this.size.height,
             height = wallDesc.size.height * this.size.height,
             width = wallDesc.size.width * this.size.width;
 
-        //Each wall is a tilesprite stretch for the defined size
-        var tileSprite = new Phaser.TileSprite(this.game,x,y,width,height,wallDesc.assetName,wallDesc.frame);
+        //Each wall is a tilesprite stretched for the defined size
+        let tileSprite = new Phaser.TileSprite(this.game,x,y,width,height,wallDesc.assetName,wallDesc.frame);
         if(wallDesc.tint !== undefined){
             tileSprite.tint = parseInt(wallDesc.tint,16);
         }
@@ -97,15 +106,19 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         tileSprite.body.allowGravity = false;
     };
 
-    Room.prototype.update = function(){
-        //Prefer manualUpdate
-    };
-    
-    /** Manually Updates the room, running collisions within the room
+    /** Updates the room, running collisions within the room
         @method
     */
-    Room.prototype.manualUpdate = function(){
-        //check for collisions
+    Room.prototype.update = function(){
+        console.log("Updating:", this.indices);
+        //check for collisions between elements in the room
+
+        //check for collisions between the controllable actor and items in this room
+        
+        //update each actor in the room
+
+    };
+
         // if(this.groups.actors !== undefined){
         //     this.game.physics.arcade.collide(this.groups.actors,this.groups.actors);
         //     this.game.physics.arcade.collide(this.groups.actors,this.groups.objects);
@@ -134,15 +147,15 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
 
         //perform interactions
 
-        
-
-    };
-
 
     Room.prototype.addAndToGroup = function(groupName,name,object){
         if(this.groups[groupName] === undefined){ this.groups[groupName] = {}; }
         this.groups[groupName][name] = object;
         this.add(object);
+    };
+
+    Room.prototype.switchActiveStatus = function(){
+        this.isInactive = !this.isInactive;
     };
     
     return Room;
