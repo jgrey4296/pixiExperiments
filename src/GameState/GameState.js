@@ -123,17 +123,23 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                                            'anActor', 'right',true,
                                            100,100);
         this.game.physics.enable(this.controllableActor);
-        this.game.world.add(this.controllableActor);
-        this.controllableActor.say("this is a test");
 
+        //Add the controllable actor to the current room
+        if(this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]] !== null){
+            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].addActor(this.controllableActor);
+        }
+        
+        //this.game.world.add(this.controllableActor);
+        this.controllableActor.say("this is a test, a really really really long test blah blah blah");
         
         //add the CA to the current room
         let x = this.roomMovement.current[0],
             y = this.roomMovement.current[1],
             room = this.maze[x][y];
-        // if(room){
-        //     room.addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
-        // }
+         if(room){
+             room.isInactive = false;
+                 //addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
+         }
 
         //modify the world update function to ignore inactive items:
         this.game.world.update = function(){
@@ -159,7 +165,12 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         //console.log("Game State update");
         
         //**** ACTOR CONTROL
-        if(this.controllableActor){
+        if(this.controllableActor && !this.roomMovement.showMap){
+            if(this.controllableActor.roomIndices[0] !== this.roomMovement.current[0]
+               || this.controllableActor.roomIndices[1] !== this.roomMovement.current[1]){
+                this.setRoom(this.controllableActor.roomIndices);
+                this.centreCameraOnCurrentRoom();
+            }
             //get the cursor keys, move the playable character as necessary
             //get interaction key
             if(this.cursors.up.isDown){
@@ -265,21 +276,27 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
     //deactivate current room, move to a new room, activate it
     GameState.prototype.moveRoom = function(i,j){
         if(this.roomMovement.movedRecently){ return; }
+        //new indices
         let newPos = [this.roomMovement.current[0] + i,
                       this.roomMovement.current[1] + j];
         if(0 <= newPos[0]  && newPos[0] < mazeSize
            && 0 <= newPos[1] && newPos[1] < mazeSize
            && this.maze[newPos[0]][newPos[1]] !== null){
-            //deactivate
-            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].switchActiveStatus();
-            this.roomMovement.current = newPos;
-            //activate
-            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].switchActiveStatus();
+            this.setRoom(newPos);
+
         }
         this.roomMovement.movedRecently = true;
         this.centreCameraOnCurrentRoom();
     };
 
+    GameState.prototype.setRoom = function(newPos){
+            //deactivate
+            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].switchActiveStatus();
+            this.roomMovement.current = newPos;
+            //activate
+            this.maze[newPos[0]][newPos[1]].switchActiveStatus();
+    };
+    
     //Move the camera to the centre of the room that is currently occupied.
     GameState.prototype.centreCameraOnCurrentRoom = function(){
         let roomCentre = this.centreOfRoom(this.roomMovement.current[0],this.roomMovement.current[1]),
@@ -297,9 +314,9 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
             //for each neighbour
             neighbourIndices.map(function(indexPair){
                 let row = maze[indexPair[0]] || [],
-                    column = row[indexPair[1]] || null;
-                if(column !== null){
-                    room.buildDoor(indexPair);
+                    columnRoom = row[indexPair[1]] || null;
+                if(columnRoom !== null){
+                    room.buildDoor(indexPair,columnRoom);
                 }
             });
         });
