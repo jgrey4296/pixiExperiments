@@ -92,7 +92,7 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
             let randomRoomDescription = _.sample(scene),
                 position = this.gridPositionToWorldPosition(parseInt(d[0]), parseInt(d[1])),
                 size = this.roomSize,
-                newRoom = this.buildRoom(randomRoomDescription,position,size);
+                newRoom = this.buildRoom(randomRoomDescription,position,size,d);
             //store the room
             this.maze[parseInt(d[0])][parseInt(d[1])] = newRoom;
         },this);
@@ -125,26 +125,35 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
             room = this.maze[x][y];
         // if(room){
         //     room.addAndToGroup('actors',this.controllableActor.name,this.controllableActor);
-        // }        
+        // }
+
+        //modify the world update function to ignore inactive items:
+        this.game.world.update = function(){
+            //console.log("New world update");
+            let i = this.children.length,
+                curr;
+            while(i--){
+                curr = this.children[i];
+                if(curr.isInactive){
+                    continue;
+                }
+                curr.update();
+            }
+
+        };
     };
 
     /**
-       Called each tick, updating the room and moving the controllable actor
+       Called each tick, moving the controllable actor, updating map position etc
        @method
      */
     GameState.prototype.update = function(){
-        //Update  only the current room
-        if(this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]] !== null){
-            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].manualUpdate();
-        }
+        //console.log("Game State update");
         
         //**** ACTOR CONTROL
         if(this.controllableActor){
-            this.controllableActor.update();
-            //this.controllableActor.move();
             //get the cursor keys, move the playable character as necessary
             //get interaction key
-            //run reasoning for each character, register actions for them to perform
             if(this.cursors.up.isDown){
                 this.controllableActor.move('up');
             }else if(this.cursors.down.isDown){
@@ -203,9 +212,9 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
        @method
      */
     
-    GameState.prototype.buildRoom = function(room,position,size){
+    GameState.prototype.buildRoom = function(room,position,size,indices){
         //console.log("Building Room:",room);
-        var newRoom = new Room(this.game,room,position,size);
+        var newRoom = new Room(this.game,room,position,size,indices);
         this.game.world.add(newRoom);
         return newRoom;
     };
@@ -247,8 +256,12 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                       this.roomMovement.current[1] + j];
         if(0 <= newPos[0]  && newPos[0] < mazeSize
            && 0 <= newPos[1] && newPos[1] < mazeSize
-          && this.maze[newPos[0]][newPos[1]] !== null){
+           && this.maze[newPos[0]][newPos[1]] !== null){
+            //deactivate
+            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].switchActiveStatus();
             this.roomMovement.current = newPos;
+            //activate
+            this.maze[this.roomMovement.current[0]][this.roomMovement.current[1]].switchActiveStatus();
         }
         this.roomMovement.movedRecently = true;
         this.centreCameraOnCurrentRoom();
