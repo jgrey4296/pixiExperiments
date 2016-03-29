@@ -21,8 +21,10 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.controllableActor = null;
         /** The FPS of the game */
         this.fps = 30;
-        /** All Rooms */
+        /** All Rooms in a grid */
         this.maze = Array(mazeSize).fill(0).map(d=>Array(mazeSize).fill(0).map(d=>null));
+        /** All Rooms in a flat array */
+        this.allRooms = [];
         /** Maze paths loaded from clingo output as answer sets of fact tuples */
         this.mazeSets = ClingoParser(mazeSets,'used');
         //room size:
@@ -90,13 +92,17 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
             }
             //create a new room
             let randomRoomDescription = _.sample(scene),
-                position = this.gridPositionToWorldPosition(parseInt(d[0]), parseInt(d[1])),
+                indices = [parseInt(d[0]),parseInt(d[1])],
+                position = this.gridPositionToWorldPosition(indices[0],indices[1]),
                 size = this.roomSize,
-                newRoom = this.buildRoom(randomRoomDescription,position,size,d);
+                newRoom = this.buildRoom(randomRoomDescription,position,size,indices);
             //store the room
             this.maze[parseInt(d[0])][parseInt(d[1])] = newRoom;
         },this);
 
+        //generate doors;
+        this.addDoors();
+        
         //Set the camera to the first room:
         this.game.camera.bounds = null;
         this.game.camera.setSize(this.roomSize[0],this.roomSize[1]);
@@ -118,6 +124,8 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
                                            100,100);
         this.game.physics.enable(this.controllableActor);
         this.game.world.add(this.controllableActor);
+        this.controllableActor.say("this is a test");
+
         
         //add the CA to the current room
         let x = this.roomMovement.current[0],
@@ -216,6 +224,7 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         //console.log("Building Room:",room);
         var newRoom = new Room(this.game,room,position,size,indices);
         this.game.world.add(newRoom);
+        this.allRooms.push(newRoom);
         return newRoom;
     };
 
@@ -243,6 +252,9 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         return position;
     };
 
+    //calculate the top right position of a room, to be offset so that the camera
+    //is centred.
+    //TODO: fix this misnomer
     GameState.prototype.centreOfRoom = function(i,j){
         let position = this.gridPositionToWorldPosition(i,j);
         position[0] += this.roomSize[0];
@@ -250,6 +262,7 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         return position;
     };
 
+    //deactivate current room, move to a new room, activate it
     GameState.prototype.moveRoom = function(i,j){
         if(this.roomMovement.movedRecently){ return; }
         let newPos = [this.roomMovement.current[0] + i,
@@ -266,11 +279,30 @@ define(['json!data/scene1.json','underscore','../Extensions/SpeechBubble','../Ex
         this.roomMovement.movedRecently = true;
         this.centreCameraOnCurrentRoom();
     };
-    
+
+    //Move the camera to the centre of the room that is currently occupied.
     GameState.prototype.centreCameraOnCurrentRoom = function(){
         let roomCentre = this.centreOfRoom(this.roomMovement.current[0],this.roomMovement.current[1]),
             newPosition = [roomCentre[0]-this.cameraOffset[0],roomCentre[1]-this.cameraOffset[1]];
         this.game.camera.focusOnXY(newPosition[0],newPosition[1]);
+    };
+
+    GameState.prototype.addDoors = function(){
+        console.log("Adding Doors");
+        //note: could be optimised to add pairs of doors at a time
+        let maze = this.maze;
+        //for each room
+        this.allRooms.forEach(function(room){
+            let neighbourIndices = room.getNeighbours();
+            //for each neighbour
+            neighbourIndices.map(function(indexPair){
+                let row = maze[indexPair[0]] || [],
+                    column = row[indexPair[1]] || null;
+                if(column !== null){
+                    room.buildDoor(indexPair);
+                }
+            });
+        });
     };
     
     return GameState;
