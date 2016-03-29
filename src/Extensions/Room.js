@@ -112,20 +112,23 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         
     };
 
-    Room.prototype.buildDoor = function(indexPair){
+    Room.prototype.buildDoor = function(indexPair,roomObject){
         if(this.groups['doors'] === undefined) {
             this.groups['doors'] = new Phaser.Group(this.game,this,'doors');
         }
+        let doorSprite = new Door(this.game,0,0,"door",indexPair,roomObject);
         //console.log("Building Door:",indexPair,this.indices);
         //calculate the x and y based on relation between indexPair and this.indices
-        let doorPosition = [indexPair[0]-this.indices[0],indexPair[1]-this.indices[1]];
+        let doorPosition = [indexPair[0]-this.indices[0],indexPair[1]-this.indices[1]],
         //horiz: [+-1,0], vertical:[0,+-1]
-        let xOffset = this.size.width * 0.05,
-            yOffset = this.size.height * 0.05,
-            x = doorPosition[0] === 0 ? 0.5 * this.size.width : doorPosition[0] < 0 ? 0 : this.size.width - xOffset,
-            y = doorPosition[1] === 0 ? 0.5 * this.size.height : doorPosition[1] < 0 ? 0 : this.size.height - yOffset;
+            xOffset = doorSprite.width,//this.size.width * 0.05,
+            yOffset = doorSprite.height,//this.size.height * 0.1,
+            x = doorPosition[0] === 0 ? 0.5 * this.size.width : doorPosition[0] < 0 ? xOffset : this.size.width - xOffset,
+            y = doorPosition[1] === 0 ? 0.5 * this.size.height : doorPosition[1] < 0 ? yOffset : this.size.height - yOffset;
 
-        let doorSprite = new Door(this.game,x,y,"door",indexPair);
+        doorSprite.position.x = x;
+        doorSprite.position.y = y;
+
         this.groups['doors'].add(doorSprite);
 
         this.game.physics.enable(doorSprite);
@@ -138,12 +141,27 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         @method
     */
     Room.prototype.update = function(){
-        //check for collisions between elements in the room
-
-        //check for collisions between the controllable actor and items in this room
-        
+        let roomRef = this;
         //update each actor in the room
+        _.values(this.actors).forEach(d=>d.update());
+        
+        //check for collisions between elements in the room
+        if(this.groups.actors !== undefined){
+            this.game.physics.arcade.collide(this.groups.actors,this.groups.actors);
+            if(this.groups.walls){
+                this.game.physics.arcade.collide(this.groups.actors,this.groups.walls);
+            }
+            //collide the actors with the doors:
+            this.game.physics.arcade.collide(this.groups.actors,this.groups.doors,function(actor,door){
+                let newPos = door.connectionObject.towardCentreFromPoint(door);
+                roomRef.removeActor(actor.id);
+                door.connectionObject.addActor(actor);
+                actor.position = newPos;
+            });
+        }        
 
+
+        
     };
 
         // if(this.groups.actors !== undefined){
@@ -175,7 +193,7 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         //perform interactions
 
 
-    Room.prototype.addAndToGroup = function(groupName,name,object){
+    Room.prototype.addToGroup = function(groupName,name,object){
         if(this.groups[groupName] === undefined){ this.groups[groupName] = {}; }
         this.groups[groupName][name] = object;
         this.add(object);
@@ -183,6 +201,7 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
 
     Room.prototype.switchActiveStatus = function(){
         this.isInactive = !this.isInactive;
+        this.parent.bringToTop(this);
         //TODO: disable the physics for all elements in the room, or enable them
     };
 
@@ -196,6 +215,41 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
             neighbourIndices = transforms.map(d=>[this.indices[0]+d[0],this.indices[1]+d[1]]);
 
         return neighbourIndices;        
+    };
+
+    //Add the actor to this room
+    Room.prototype.addActor = function(actor){
+        if(this.groups['actors'] === undefined){
+            this.groups['actors'] = new Phaser.Group(this.game,this,'actors');
+        };
+        if(this.actors[actor.id] !== undefined){
+            throw new Error("Adding an actor with a duplicate name");
+        }
+        this.groups['actors'].add(actor);
+        this.actors[actor.id] = actor;
+        actor.setRoomIndices(this.indices);
+    };
+
+    //remove the actor from thise room, by name
+    Room.prototype.removeActor = function(actorId,deleteFromRoom,destroy){
+        destroy = destroy || false;
+        deleteFromRoom = deleteFromRoom || true;
+        if(this.actors[actorId] !== undefined){
+            let actor = this.actors[actorId];
+            this.groups['actors'].remove(this.actors[actorId],destroy);
+            if(deleteFromRoom){
+                delete this.actors[actorId];
+            }
+            return actor;
+        }
+        return null;
+    };
+
+    Room.prototype.towardCentreFromPoint = function(obj){
+        let roomCen = new Phaser.Point(this.size.width*0.5,this.size.height*0.5),
+            roomCenRelToDoor = obj.toLocal(roomCen,this).setMagnitude(100),            
+            newPositionRelToRoom = this.toLocal(roomCenRelToDoor,obj);
+        return newPositionRelToRoom;
     };
     
     return Room;

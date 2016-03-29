@@ -30,6 +30,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         this.jumpTimer = 0;
         this.defaultStrength = 250;
         this.isInactive = false;
+        this.roomIndices = [0,0];
         
         if(this.facing === "left") this.flip();
         
@@ -106,7 +107,7 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
         if(direction === 'down'){
             this.body.velocity.y += strength;
         }else if(direction === 'up'){// &&  this.game.time.now > this.jumpTimer){
-            this.body.velocity.y = -250;
+            this.body.velocity.y -= strength;
             //this.jumpTimer = this.game.time.now + 750;
         }else if(direction === 'right'){
             this.body.velocity.x += strength;
@@ -153,6 +154,9 @@ define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubb
 
     };
 
+    Actor.prototype.setRoomIndices = function(indices){
+        this.roomIndices = indices;
+    };
     
     
     return Actor;
