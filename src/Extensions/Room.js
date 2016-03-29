@@ -1,3 +1,4 @@
+/* jshint esversion : 6 */
 define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door,Phaser){
 
     /**
@@ -15,6 +16,10 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
 
         this.x = position[0];
         this.y = position[1];
+        this.size = {
+            width : size[0],
+            height : size[1]
+        };
         
         /** id */
         this.id = description.id;
@@ -33,6 +38,32 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         /** Draw groups in the room */
         this.groups = {};
 
+        //Build the walls:
+        this.buildWall({
+            position : { x : 0, y : 0},
+            size : { width : 1.0, height : 0.05 },
+            assetName : "whiteTile",
+            tint : "AA0000",
+        });
+        this.buildWall({
+            position : { x : 0, y : 0.95},
+            size : { width : 1.0, height : 0.05},
+            assetName : "whiteTile",
+            tint : "0000AA"
+        });
+        this.buildWall({
+            position : { x: 0, y : 0},
+            size : { width : 0.05, height : 1.0},
+            assetName : "whiteTile",
+            tint : "AA00AA",
+        });
+        this.buildWall({
+            position : { x : 0.95, y: 0},
+            size : { width : 0.05, height : 1.0},
+            assetName : "whiteTile",
+            tint : "1423FF",
+        });
+        
     };
     
     Room.prototype = Object.create(Phaser.Group.prototype);
@@ -42,12 +73,17 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         @method
      */
     Room.prototype.buildWall = function(wallDesc){
+        /* wallDesc : {
+           position : { x : num, y : num }, //as % of room size
+           size : { height : num, width : num }, //as % of room size
+           assetName, frame, tint
+           }
+         */
         if(this.groups['walls'] === undefined) this.groups['walls'] = new Phaser.Group(this.game,this,'walls');
-        var x = wallDesc.position.x * this.game.width,
-            y = wallDesc.position.y * this.game.height,
-            height = wallDesc.height * this.game.height,
-            width = wallDesc.width * this.game.width;
-        console.log(this.game.width,this.game.height);
+        var x = wallDesc.position.x * this.size.width,
+            y = wallDesc.position.y * this.size.height,
+            height = wallDesc.size.height * this.size.height,
+            width = wallDesc.size.width * this.size.width;
 
         //Each wall is a tilesprite stretch for the defined size
         var tileSprite = new Phaser.TileSprite(this.game,x,y,width,height,wallDesc.assetName,wallDesc.frame);
@@ -69,7 +105,6 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
         @method
     */
     Room.prototype.manualUpdate = function(){
-        var roomRef = this;
         //check for collisions
         // if(this.groups.actors !== undefined){
         //     this.game.physics.arcade.collide(this.groups.actors,this.groups.actors);
