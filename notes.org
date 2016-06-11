@@ -1,0 +1,16 @@
+* Hex Based Phaser Game
+** General Design
+GameState->HexBoard->Rooms->Hexagon
+** GameStates
+*** Boot
+*** PreLoadAssets
+*** GameState
+** Component Objects
+*** Actor
+*** Door
+*** Hexagon
+*** Item
+*** Room
+*** SpeechBubble
+*** HexBoard
+** Utils
