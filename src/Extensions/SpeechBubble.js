@@ -1,4 +1,4 @@
-define(['underscore','phaser'],function(_,Phaser){
+define(['lodash','phaser'],function(_,Phaser){
 
     /** Implements a speech bubble, from {@link http://jsfiddle.net/lewster32/81pzgs4z/ lewster32}
        @constructor

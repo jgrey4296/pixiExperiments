@@ -1,4 +1,4 @@
-define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser){
+define(['lodash','json!data/assets.json','phaser'],function(_,assets,Phaser){
     /**
        Preload Assets
        @constructor
@@ -11,7 +11,7 @@ define(['underscore','json!data/assets.json','phaser'],function(_,assets,Phaser)
     };
 
     /**
-       Load everything required, from data/asset.json
+       Load everything required, from data/assets.json
        @method
      */
     PreLoadAssets.prototype.preload = function(){

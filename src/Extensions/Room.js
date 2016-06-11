@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door,Phaser){
+define(['lodash','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Door,Phaser){
 
     /**
        The main room class, holding actors, and separate groups of sprites etc
@@ -159,9 +159,6 @@ define(['underscore','./Actor','./Item','./Door','phaser'],function(_,Actor,Item
                 actor.position = newPos;
             });
         }        
-
-
-        
     };
 
     

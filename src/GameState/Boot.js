@@ -1,4 +1,4 @@
-define(['underscore','phaser'],function(_,Phaser){
+define(['lodash','phaser'],function(_,Phaser){
     /**
        The Boot State
        @constructor
@@ -33,6 +33,7 @@ define(['underscore','phaser'],function(_,Phaser){
         this.loadBarTween = this.game.add.tween(this.loadBar).to({x:this.game.width},
                                                                  1000, Phaser.Easing.Quadratic.InOut, false);
         this.loadBarTween.onComplete.add(function(){
+            //transition to the preload assets state:
             this.game.state.start('PreLoadAssets');
         },this);
         this.loadBarTween.start();

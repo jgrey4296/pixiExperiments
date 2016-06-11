@@ -1,5 +1,5 @@
 
-define(['underscore','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,Phaser,util){
+define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,Phaser,util){
     /** Describes an actor, and all information related to it
         @constructor
         @param game,

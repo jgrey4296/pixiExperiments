@@ -1,5 +1,5 @@
 
-define(['underscore','phaser'],function(_,Phaser){
+define(['lodash','phaser'],function(_,Phaser){
 
     /**
        An Item component

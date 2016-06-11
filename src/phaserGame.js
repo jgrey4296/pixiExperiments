@@ -1,5 +1,6 @@
-define(['underscore','src/GameState/Boot','src/GameState/PreLoadAssets','src/GameState/GameState','phaser',"Rete"],function(_,Boot,PreLoadAssets,GameState,Phaser,Rete){
-
+define(['lodash','src/GameState/Boot','src/GameState/PreLoadAssets','src/GameState/GameState','phaser',"Rete",'util'],function(_,Boot,PreLoadAssets,GameState,Phaser,Rete,util){
+    util.debug('start','Debug Print:',Phaser);
+    
     /**
        The main class that encapsulates the entire game
        @constructor

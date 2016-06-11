@@ -3,7 +3,7 @@ if(typeof define !== 'function'){
     var define = require('amdefine')(module);
 }
 
-define(['underscore'],function(_){
+define(['lodash'],function(_){
     "use strict";
     /**
        A Clingo parser that takes the answers from a clingo output 

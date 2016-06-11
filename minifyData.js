@@ -3,12 +3,13 @@
     baseUrl: "./",
     paths : {
         requireLib : "node_modules/requirejs/require",
-        underscore : "libs/underscore-min",
+        lodash : "libs/lodash",
         //phaser
         phaser : 'libs/phaser.min',
         pixi : 'libs/pixi',
         text : 'libs/text',
         json : "libs/json",
+        util : "src/util"
     },
     shim: {
         'phaser' : {
