@@ -53,9 +53,6 @@ define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extens
         this.game.physics.arcade.gravity.y = this.gravityAmnt;
         this.physics.arcade.setBounds(0,0,(mazeSize+1)*this.screenSize[0],(mazeSize+1)*this.screenSize[1]);        
         
-        //Set the camera to the first room:
-        this.game.camera.bounds = null;
-        this.game.camera.setSize(this.screenSize[0],this.screenSize[1]);
 
         //setup the world bounds:
         this.game.world.setBounds(-1000,-1000,2000,2000);
@@ -73,22 +70,23 @@ define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extens
             }
         };
         
-        //  Then generate a texture from it and cache it:
-        let radius = 100,
+        //generate a default hex texture from and cache it:
+        let radius = 200,
             h = new HexTexture(this.game,radius),
             h_tex = h.generateTexture();
         h.destroy();
         this.game.cache.addRenderTexture(util.hexTexture(radius),h_tex);
-
+        
         //create the hexboard, add it to the world
         this.hexBoard = new HexBoard(this.game,[BOARD_X_SIZE,BOARD_Y_SIZE]);
         this.hexBoard.x = 0;
         this.hexBoard.y = 0;
         this.world.add(this.hexBoard);
+
+        //Set the camera to the first room:
+        this.game.camera.bounds = null;
+        this.game.camera.setSize(25 * 51, 25 * 51);
         this.game.camera.focusOn(this.hexBoard);
-
-
- 
         
     };
 
