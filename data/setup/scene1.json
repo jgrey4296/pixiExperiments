@@ -1,9 +1,11 @@
 {
+    "FPS" : 20,
     "BOARD_SIZE" : [25,25],
     "MAZE_SIZE" : 8,
     "HEX_TEXTURE_FILL": "0xF123A1",
-    "HEX_TEXTURE_ALPHA": 0,
-    "HEX_TEXTURE_STROKE": "0xFFFFFF",    
+    "HEX_TEXTURE_ALPHA": 0.3,
+    "HEX_TEXTURE_STROKE": "0xFFFFFF",
+    "HEX_RADIUS" : 50,
     "rooms" : [
         {
             "id" : 0,
