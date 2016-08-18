@@ -21,8 +21,11 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         this.fps = scene.FPS;
         //screen size:
         this.screenSize = [this.game.width,this.game.height];
+        this.zoomAmount =  0.005;
         //cursor listeners
         this.cursors = null;
+        this.keys = {};
+        
         //the hexBoard
         this.hexBoard = null;
     };
@@ -44,13 +47,17 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
     GameState.prototype.create = function(){
         this.game.time.desiredFps = this.fps;
         this.cursors = this.game.input.keyboard.createCursorKeys();
+        //Register specific keys:
+        this.keys['z'] = this.game.input.keyboard.addKey(Phaser.KeyCode.Z);
+        this.keys['x'] = this.game.input.keyboard.addKey(Phaser.KeyCode.X);
+
+        //
         this.cameraOffset = [this.game.width/2,this.game.height/2];
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.gravityAmnt;
         this.physics.arcade.setBounds(0,0,(scene.MAZE_SIZE+1)*this.screenSize[0],(scene.MAZE_SIZE+1)*this.screenSize[1]);        
         
-
         //setup the world bounds:
         this.game.world.setBounds(-1000,-1000,2000,2000);
         
@@ -96,11 +103,21 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
             this.game.camera.y -= 10;
         }else if(this.cursors.down.isDown){
             this.game.camera.y += 10;
-        }else if(this.cursors.left.isDown){
+        }
+
+        if(this.cursors.left.isDown){
             this.game.camera.x -= 10;
         }else if(this.cursors.right.isDown){
             this.game.camera.x += 10;
-        }        
+        }
+
+        if(this.keys.z.isDown){
+            this.game.camera.scale.x += this.zoomAmount;
+            this.game.camera.scale.y += this.zoomAmount;
+        }else if(this.keys.x.isDown){
+            this.game.camera.scale.x -= this.zoomAmount;
+            this.game.camera.scale.y -= this.zoomAmount;
+        }
     };
 
     /**
