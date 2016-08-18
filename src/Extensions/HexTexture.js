@@ -11,7 +11,7 @@ define(['lodash','./Actor','./Item','./Door','util','phaser'],function(_,Actor,I
        @alias Room
        @augments Phaser.Group
      */
-    var Hexagon = function(game,radius,fillColour,strokeColour){
+    var Hexagon = function(game,radius,fillColour,fillAlpha,strokeColour){
         util.debug('texture',()=>console.log(`Creating Hex Texture of size: ${radius}`));
         Phaser.Graphics.call(this,game,null);
         radius = radius || 5;
@@ -29,7 +29,11 @@ define(['lodash','./Actor','./Item','./Door','util','phaser'],function(_,Actor,I
             });
         //link back to the beginning
         path.push(new Phaser.Point(start[0],start[1]));
+
+        console.log("TEXTURE VALUES:",fillColour,fillAlpha,strokeColour);
+        this.beginFill(fillColour,fillAlpha)
         this.drawPolygon(path);
+        this.endFill();
     };
     
     Hexagon.prototype = Object.create(Phaser.Graphics.prototype);
