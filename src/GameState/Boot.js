@@ -1,4 +1,6 @@
+/* jshint esversion : 6 */
 define(['lodash','phaser'],function(_,Phaser){
+    "use strict";
     /**
        The Boot State
        @constructor
@@ -16,7 +18,7 @@ define(['lodash','phaser'],function(_,Phaser){
      */
     Boot.prototype.preload = function(){
         //load a loading bar image
-        this.game.load.image("loadImage","data/loadImage.png");
+        this.game.load.image("loadImage","data/images/loadImage.png");
         //Turn on for debugging:
         //this.game.time.advancedTiming = true;
     };
@@ -32,6 +34,7 @@ define(['lodash','phaser'],function(_,Phaser){
         this.loadBar.anchor.setTo(0.5,0.5);
         this.loadBarTween = this.game.add.tween(this.loadBar).to({x:this.game.width},
                                                                  1000, Phaser.Easing.Quadratic.InOut, false);
+
         this.loadBarTween.onComplete.add(function(){
             //transition to the preload assets state:
             this.game.state.start('PreLoadAssets');
@@ -46,7 +49,6 @@ define(['lodash','phaser'],function(_,Phaser){
     Boot.prototype.render = function(){
         //this.game.debug.text(this.game.time.fps || '--', 2, 14, "#ffffff");
         //console.log("FPS:",game.time.fps);
-
     };
 
     

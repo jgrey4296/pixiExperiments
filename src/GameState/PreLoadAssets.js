@@ -1,4 +1,4 @@
-define(['lodash','json!data/assets.json','phaser'],function(_,assets,Phaser){
+define(['lodash','json!data/setup/assets.json','phaser'],function(_,assets,Phaser){
     /**
        Preload Assets
        @constructor
@@ -19,9 +19,9 @@ define(['lodash','json!data/assets.json','phaser'],function(_,assets,Phaser){
         //Load everything speciied in the assets json
         assets.forEach(function(asset){
             if(asset.type === "image"){
-                this.game.load.image(asset.name,"data/"+asset.fileName);
+                this.game.load.image(asset.name,"data/images/"+asset.fileName);
             }else if(asset.type === "spritesheet"){
-                this.game.load.spritesheet(asset.name,"data/"+asset.fileName,asset.frames.x,asset.frames.y);
+                this.game.load.spritesheet(asset.name,"data/images/"+asset.fileName,asset.frames.x,asset.frames.y);
             }else if(asset.type === "bitmapfont"){
                 this.game.load.bitmapFont(asset.name,asset.url,null,asset.data);
             }else{

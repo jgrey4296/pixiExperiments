@@ -1,10 +1,7 @@
 
 /* jshint esversion : 6 */
-define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon){
-    const mazeSize = 8,
-          BOARD_X_SIZE = 25,
-          BOARD_Y_SIZE = 25;
-    
+define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon){
+
     /**
        Main state of a game. In this case emulating BoI, loaded from data/scene1.json
        @constructor
@@ -21,7 +18,7 @@ define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extens
         /** The Current actor the player controls */
         this.controllableActor = null;
         /** The FPS of the game */
-        this.fps = 30;
+        this.fps = scene.FPS;
         //screen size:
         this.screenSize = [this.game.width,this.game.height];
         //cursor listeners
@@ -51,7 +48,7 @@ define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extens
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.gravityAmnt;
-        this.physics.arcade.setBounds(0,0,(mazeSize+1)*this.screenSize[0],(mazeSize+1)*this.screenSize[1]);        
+        this.physics.arcade.setBounds(0,0,(scene.MAZE_SIZE+1)*this.screenSize[0],(scene.MAZE_SIZE+1)*this.screenSize[1]);        
         
 
         //setup the world bounds:
@@ -72,13 +69,13 @@ define(['json!data/scene1.json','lodash','../Extensions/SpeechBubble','../Extens
         
         //generate a default hex texture from and cache it:
         let radius = 200,
-            h = new HexTexture(this.game,radius),
+            h = new HexTexture(this.game,radius,parseInt(scene.HEX_TEXTURE_FILL),parseInt(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
             h_tex = h.generateTexture();
         h.destroy();
         this.game.cache.addRenderTexture(util.hexTexture(radius),h_tex);
         
         //create the hexboard, add it to the world
-        this.hexBoard = new HexBoard(this.game,[BOARD_X_SIZE,BOARD_Y_SIZE]);
+        this.hexBoard = new HexBoard(this.game,[scene.BOARD_SIZE[0],scene.BOARD_SIZE[1]],scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),parseFloat(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
         this.hexBoard.x = 0;
         this.hexBoard.y = 0;
         this.world.add(this.hexBoard);
