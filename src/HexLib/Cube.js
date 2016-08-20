@@ -111,13 +111,15 @@ define([],function(){
 
     //Get the Logical (not actual) neighbours of a cube
     //needs filtering in hexagon to remove non-existing positions
+    //TUPLES ARE (Y,x,z) to go with red blob reference
+    //RETURNS ANTI_CLOCKWISE, from TOP RIGHT
     Cube.prototype.neighbours = function(){
         let directions = [
-                [1,-1,0],[1,0,-1],[0,1,-1],
-                [-1,1,0],[-1,0,1],[0,-1,1]
+            [0,1,-1],[1,0,-1],[1,-1,0], // tr, tl, ml
+            [0,-1,1],[-1,0,1],[-1,1,0] // bl, br, mr
         ],
-            neighbours = directions.map(d=>new Cube(this.x + d[0],
-                                                    this.y + d[1],
+            neighbours = directions.map(d=>new Cube(this.x + d[1],
+                                                    this.y + d[0],
                                                     this.z + d[2]));
         return neighbours;
     };

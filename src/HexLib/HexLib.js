@@ -72,13 +72,15 @@ define(['lodash','./Cube'],function(_,Cube){
         return cube.toOffset();
     };
 
+    HexUtil.cubeToIndex = function(cube){
+        return HexUtil.offsetToIndex(cube.toOffset());
+    }
+
     /**
-       neighbours : Get the 6 neighbours of a node,
-       filters invalid neighbours
-       @param index The central node, as an index
-       @returns {Array} Array of indices of neighbours
+       Get the 6 neighbours of a node, 
+       invalid nodes === null
      */
-    HexUtil.neighbours = function(index){
+    HexUtil.neighbour_vector = function(index){
         let positionsLength = HexUtil.positions.length,
             rows = BOARD_X,
             columns = BOARD_Y,
@@ -86,16 +88,26 @@ define(['lodash','./Cube'],function(_,Cube){
             neighbours = cube.neighbours(),
             //get offset locations
             n_offset = neighbours.map(d=>d.toOffset()),
-            //filter by out of bounds
-            n_offset_filtered = n_offset.filter(d=>HexUtil.inBounds(d)),
-            //convert to indices
-            n_indices = n_offset_filtered.map(d=>HexUtil.offsetToIndex(d)),
-            //filter by out of bounds
-            n_indices_filtered = n_indices.filter(d=> d >= 0 && d < positionsLength);
+            inBounds = n_offset.map(d=>{ if(HexUtil.inBounds(d)){ null; } else{ d; } }),
+            toIndices = inBounds.map(d=>{ if(d !== null){HexUtil.offsetToIndex(d)} else { null; }});
 
-        return n_indices_filtered;
+            //filter by out of bounds
+            //n_indices_filtered = n_indices.filter(d=> d >= 0 && d < positionsLength);
+            
+        return toIndices;
     };
 
+    /**
+       neighbour vector : Get up to the 6 neighbours of a node,
+       filters invalid neighbours
+       @param index The central node, as an index
+       @returns {Array} Array of indices of neighbours
+     */
+    HexUtil.neighbours = function(index){
+        let vector = this.neighbour_vector(index);
+        return vector.filter(d=>d !== null)
+    };
+    
     HexUtil.neighbourCells = function(index){
         return HexUtil.neighbours(index).map(d=>HexUtil.positions[d]);
     };
@@ -264,6 +276,9 @@ define(['lodash','./Cube'],function(_,Cube){
         }
         return false;
     }
+
+    //TODO: calculate coordinates of a face
+
     
     return HexUtil;
 });
