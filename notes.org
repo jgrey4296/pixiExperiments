@@ -14,3 +14,19 @@ GameState->HexBoard->Rooms->Hexagon
 *** SpeechBubble
 *** HexBoard
 ** Utils
+** TODOs
+*** DONE make hexagons groups with a sprite inside, instead of just a sprite
+**** DONE update constructor
+**** DONE add sprite
+**** DONE set sprite anchor instead of group anchor
+*** TODO add walls to each hexagon
+**** DONE calculate wall and door existence
+**** TODO calculate entry positions for doors
+     also make sure to put cool downs on doors? based on distance from door
+**** TODO add wall and door physical sprites
+***** TODO Create Door, Wall classes
+**** TODO write collisions to call hexboard.transitionTo
+*** TODO hexboard.transitionTo
+**** TODO flip flop door active status
+*** TODO let hexagons deal with agents/objects being added to them
+    in a custom collision handler?
