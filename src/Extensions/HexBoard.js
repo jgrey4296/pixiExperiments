@@ -42,8 +42,12 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
             return newHex;
         });
 
-        _.sampleSize(_.shuffle(this.hexagons),200).forEach(d=>d.destroy());//this.removeChild(d));
+        //Remove a random number of cells
+        _.sampleSize(this.hexagons,200).forEach(d=>d.destroy());//this.removeChild(d));
 
+        //TODO: add walls:
+
+        
         console.log(this.hexagons);
         
         util.debug('hexs',()=>console.log(this.hexagons.map(d=>[d.x,d.y])));
@@ -52,5 +56,26 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
     HexBoard.prototype = Object.create(Phaser.Group.prototype);
     HexBoard.prototype.constructor = HexBoard;
 
+    HexBoard.prototype.getHexAtCube = function(cube){
+        let index = HexUtil.cubeToIndex(cube);
+        return this.hexagons[index];
+    };
+    
+
+    //TODO
+    HexBoard.prototype.transitionTo = function(object,oldHex,newHex){
+        //remove the object from the hex it is currently attached to (parent)
+        //and then add it to the new hex
+    };
+
+    HexBoard.calculateDoorsAndWalls = function(){
+        //for each hexagon:
+        for(var i = 0; i < this.hexagons.length; i++){
+            let neighbours = HexUtil.neighbour_vector(i);
+            this.hexagons[i].calculateDoorsAndWalls(neighbours);
+        }
+    };
+    
+    
     return HexBoard;
 });
