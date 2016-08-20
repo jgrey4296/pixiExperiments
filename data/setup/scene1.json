@@ -5,7 +5,7 @@
     "HEX_TEXTURE_FILL": "0xF123A1",
     "HEX_TEXTURE_ALPHA": 0.3,
     "HEX_TEXTURE_STROKE": "0xFFFFFF",
-    "HEX_RADIUS" : 50,
+    "HEX_RADIUS" : 500,
     "rooms" : [
         {
             "id" : 0,
