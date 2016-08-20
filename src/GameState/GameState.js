@@ -1,6 +1,6 @@
 
 /* jshint esversion : 6 */
-define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon){
+define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon','../HexLib/HexLib'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon,HexLib){
 
     /**
        Main state of a game. In this case emulating BoI, loaded from data/scene1.json
@@ -28,6 +28,9 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         
         //the hexBoard
         this.hexBoard = null;
+        //Start Location:
+        this.hexLocation = HexLib.indexToCube(50);
+        
     };
 
     /**
@@ -50,9 +53,8 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         //Register specific keys:
         this.keys['z'] = this.game.input.keyboard.addKey(Phaser.KeyCode.Z);
         this.keys['x'] = this.game.input.keyboard.addKey(Phaser.KeyCode.X);
-
-        //
-        this.cameraOffset = [this.game.width/2,this.game.height/2];
+        this.keys['space'] = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+        
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.y = this.gravityAmnt;
@@ -76,21 +78,29 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         
         //generate a default hex texture from and cache it:
         let radius = 200,
-            h = new HexTexture(this.game,radius,parseInt(scene.HEX_TEXTURE_FILL),parseInt(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
+            h = new HexTexture(this.game,radius,parseInt(scene.HEX_TEXTURE_FILL),parseFloat(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
             h_tex = h.generateTexture();
         h.destroy();
         this.game.cache.addRenderTexture(util.hexTexture(radius),h_tex);
         
         //create the hexboard, add it to the world
         this.hexBoard = new HexBoard(this.game,[scene.BOARD_SIZE[0],scene.BOARD_SIZE[1]],scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),parseFloat(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
+        this.world.add(this.hexBoard);
         this.hexBoard.x = 0;
         this.hexBoard.y = 0;
-        this.world.add(this.hexBoard);
+        
+        //Create a sprite, place it at the position of the first hex
+        this.pigSprite = new Phaser.Sprite(this.game,0,0,'pig',5);
+        console.log('pigSprite coords',this.pigSprite.x,this.pigSprite.y,this.hexBoard.x,this.hexBoard.y,this.camera.x,this.camera.y);
+        this.hexBoard.hexagons[0].add(this.pigSprite);
+        
 
         //Set the camera to the first room:
+        let cameraSize = scene.HEX_RADIUS;
         this.game.camera.bounds = null;
-        this.game.camera.setSize(25 * 51, 25 * 51);
-        this.game.camera.focusOn(this.hexBoard);
+        //this.game.camera.setSize(cameraSize,cameraSize);
+        //this.game.camera.focusOn(sprite);
+        this.game.camera.follow(this.pigSprite,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
         
     };
 
@@ -100,15 +110,24 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
      */
     GameState.prototype.update = function(){
         if(this.cursors.up.isDown){
-            this.game.camera.y -= 10;
+            this.pigSprite.y -= 10;
+            //this.game.camera.y -= 10;
+            // console.log(this.hexBoard.hexagons);
+            // console.log('moving from',this.hexLocation);
+            // this.hexLocation = this.hexLocation.move('upRight');
+            // console.log('moving to',this.hexLocation);
+            // this.game.camera.focusOn(this.hexBoard.getHexAtCube(this.hexLocation));
         }else if(this.cursors.down.isDown){
-            this.game.camera.y += 10;
+            this.pigSprite.y += 10;
+            //this.game.camera.y += 10;
         }
 
         if(this.cursors.left.isDown){
-            this.game.camera.x -= 10;
+            this.pigSprite.x -= 10;
+            //this.game.camera.x -= 10;
         }else if(this.cursors.right.isDown){
-            this.game.camera.x += 10;
+            this.pigSprite.x += 10;
+            //this.game.camera.x += 10;
         }
 
         if(this.keys.z.isDown){
@@ -118,6 +137,11 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
             this.game.camera.scale.x -= this.zoomAmount;
             this.game.camera.scale.y -= this.zoomAmount;
         }
+
+        if(this.keys.space.isDown){
+            console.log("Camera Scale: ",this.game.camera.scale,this.game.camera);
+        }
+        
     };
 
     /**
