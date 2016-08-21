@@ -1,6 +1,6 @@
 
 /* jshint esversion : 6 */
-define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Room','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon','../HexLib/HexLib'],function(scene,_,SpeechBubble,Actor,Room,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon,HexLib){
+define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../Extensions/Actor','../Extensions/Wall','phaser','text!data/mazePaths','ClingoParser','../Extensions/HexBoard','../Extensions/HexTexture','util','../Extensions/Hexagon','../HexLib/HexLib'],function(scene,_,SpeechBubble,Actor,Wall,Phaser,mazeSets,ClingoParser,HexBoard,HexTexture,util,Hexagon,HexLib){
 
     /**
        Main state of a game. In this case emulating BoI, loaded from data/scene1.json
@@ -14,7 +14,7 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         /** A Reference to the game */
         this.game = game;
         /** The amount of gravity */
-        this.gravityAmnt = 0;
+        this.gravityAmnt = scene.GRAVITY;
         /** The Current actor the player controls */
         this.controllableActor = null;
         /** The FPS of the game */
@@ -57,50 +57,42 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.physics.arcade.gravity.y = this.gravityAmnt;
+        this.game.physics.arcade.gravity.x = this.gravityAmnt.x;
+        this.game.physics.arcade.gravity.y = this.gravityAmnt.y;
         this.physics.arcade.setBounds(0,0,(scene.MAZE_SIZE+1)*this.screenSize[0],(scene.MAZE_SIZE+1)*this.screenSize[1]);        
         
         //setup the world bounds:
         this.game.world.setBounds(-1000,-1000,2000,2000);
         
-        //modify the world update function to ignore inactive items:
-        this.game.world.update = function(){
-            let i = this.children.length,
-                curr;
-            while(i--){
-                curr = this.children[i];
-                if(curr.isInactive){
-                    continue;
-                }
-                curr.update();
-            }
-        };
+        /*
+          modify the world update function to ignore inactive items:
+        */
+        //this.game.world.update = inactiveAwareUpdate;
+
         
-        //generate a default hex texture from and cache it:
-        let radius = 200,
-            h = new HexTexture(this.game,radius,parseInt(scene.HEX_TEXTURE_FILL),parseFloat(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
+        //generate a default hex texture and cache it:
+        //then cleanup the sprite
+        let h = new HexTexture(this.game,scene.HEX_DEFAULT_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
             h_tex = h.generateTexture();
         h.destroy();
-        this.game.cache.addRenderTexture(util.hexTexture(radius),h_tex);
+        this.game.cache.addRenderTexture(util.hexTexture(scene.HEX_DEFAULT_TEXTURE),h_tex);
         
         //create the hexboard, add it to the world
-        this.hexBoard = new HexBoard(this.game,[scene.BOARD_SIZE[0],scene.BOARD_SIZE[1]],scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),parseFloat(scene.HEX_TEXTURE_ALPHA),parseInt(scene.HEX_TEXTURE_STROKE));
+        this.hexBoard = new HexBoard(this.game,[scene.BOARD_SIZE[0],scene.BOARD_SIZE[1]],scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
         this.world.add(this.hexBoard);
         this.hexBoard.x = 0;
         this.hexBoard.y = 0;
         
-        //Create a sprite, place it at the position of the first hex
-        this.pigSprite = new Phaser.Sprite(this.game,0,0,'pig',5);
-        console.log('pigSprite coords',this.pigSprite.x,this.pigSprite.y,this.hexBoard.x,this.hexBoard.y,this.camera.x,this.camera.y);
-        this.hexBoard.hexagons[0].add(this.pigSprite);
-        
+        //Create the player, place it at the position of the first hex
+        this.controllableActor = new Actor(this.game,scene.actor);
+        this.hexBoard.hexagons[0].addToSubGroup('actors',this.controllableActor);
 
         //Set the camera to the first room:
         let cameraSize = scene.HEX_RADIUS;
         this.game.camera.bounds = null;
         //this.game.camera.setSize(cameraSize,cameraSize);
         //this.game.camera.focusOn(sprite);
-        this.game.camera.follow(this.pigSprite,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
+        this.game.camera.follow(this.controllableActor,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
         
     };
 
@@ -109,27 +101,20 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
        @method
      */
     GameState.prototype.update = function(){
+        //UP/DOWN
         if(this.cursors.up.isDown){
-            this.pigSprite.y -= 10;
-            //this.game.camera.y -= 10;
-            // console.log(this.hexBoard.hexagons);
-            // console.log('moving from',this.hexLocation);
-            // this.hexLocation = this.hexLocation.move('upRight');
-            // console.log('moving to',this.hexLocation);
-            // this.game.camera.focusOn(this.hexBoard.getHexAtCube(this.hexLocation));
+            this.controllableActor.move('up');
         }else if(this.cursors.down.isDown){
-            this.pigSprite.y += 10;
-            //this.game.camera.y += 10;
+            this.controllableActor.move('down');
         }
-
+        //LEFT/RIGHT
         if(this.cursors.left.isDown){
-            this.pigSprite.x -= 10;
-            //this.game.camera.x -= 10;
+            this.controllableActor.move('left');
         }else if(this.cursors.right.isDown){
-            this.pigSprite.x += 10;
-            //this.game.camera.x += 10;
+            this.controllableActor.move('right');
         }
 
+        //ZOOM
         if(this.keys.z.isDown){
             this.game.camera.scale.x += this.zoomAmount;
             this.game.camera.scale.y += this.zoomAmount;
@@ -138,10 +123,14 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
             this.game.camera.scale.y -= this.zoomAmount;
         }
 
+        //print camera debug info
         if(this.keys.space.isDown){
             console.log("Camera Scale: ",this.game.camera.scale,this.game.camera);
         }
-        
+
+        //UPDATES
+        let currentRoom = this.controllableActor.parent;
+        currentRoom.update();        
     };
 
     /**
@@ -154,5 +143,22 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
 
     };
 
+    /*
+      A Custom update function that is aware of objects that 
+      can be designated inactive, thus skipping them.
+     */
+    let inactiveAwareUpdate = function(){
+        let i = this.children.length,
+            curr;
+        while(i--){
+            curr = this.children[i];
+            if(curr.isInactive){
+                continue;
+            }
+            curr.update();
+        }
+    };
+    
+    
     return GameState;
 });
