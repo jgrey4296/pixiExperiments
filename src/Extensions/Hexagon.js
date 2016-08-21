@@ -27,6 +27,10 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         hexSprite.anchor.set(0.5);
         this.add(hexSprite);
         this.neighbours = [null,null,null,null,null,null];
+
+        this.active = true;
+        //The various elements of the hexagon. actors, walls, doors etc
+        this.subGroups = {};
         
     };
     Hexagon.prototype = Object.create(Phaser.Group.prototype);
@@ -37,8 +41,8 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         for(var i = 0; i < neighbours.length; i++){
             let start = util.calcPoint([0,0],this.radius,i,6,false),
                 end = util.calcPoint([0,0],this.radius,i % 6,6,false);
-            if(neighbours[i] !== null){
-                this.neighbours[i] = neighbours[i]; //populate the neighbour link
+            if(neighbours[i] !== null && neighbours[i].active === true){
+                this.neighbours[i] = neighbours[i]; //populate the neighbour
                 //create a door
                 //let newDoor = new Door(game,start,end);
                 //this.add(newDoor);
@@ -55,7 +59,28 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
     };
 
     Hexagon.prototype.update = function(){
+        let i = this.children.length,
+            curr;
+        while(i--){
+            curr = this.children[i];
+            if(curr.isInactive){
+                continue;
+            }
+            curr.update();
+        }        
+    };
 
+    Hexagon.prototype.addSubGroup = function(name){
+        if(this.subGroups[name] === undefined){
+            this.subGroups[name] = new Phaser.Group(this.game,0,0);
+        }
+    };
+
+    Hexagon.prototype.addToSubGroup = function(name,obj){
+        if(this.subGroups[name] === undefined){
+            this.addSubGroup(name);
+        }
+        this.subGroups[name].add(obj);
     };
     
     return Hexagon;

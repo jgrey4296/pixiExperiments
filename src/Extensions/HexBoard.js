@@ -34,7 +34,6 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         
         //The array of stored Hexagons.
         //ie: accessed by INDEX
-        //todo: add the hexagons to the group, offset appropriately
         this.hexagons = Array(this.boardSize[0] * this.boardSize[1]).fill(0).map((d,i)=>{
             //game,index,offset,cube,name,radius,fillColour,strokeColour
             let newHex = new Hexagon(this.game,'hexCell',this.radius,i);
@@ -43,13 +42,15 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         });
 
         //Remove a random number of cells
-        _.sampleSize(this.hexagons,200).forEach(d=>d.destroy());//this.removeChild(d));
+        _.sampleSize(this.hexagons,200).forEach(d=>{
+            d.active = false;
+            d.destroy()
+        });//this.removeChild(d));
 
         //TODO: add walls:
+        
 
-        
         console.log(this.hexagons);
-        
         util.debug('hexs',()=>console.log(this.hexagons.map(d=>[d.x,d.y])));
         util.debug('start',()=>console.log('Finished Creating Hexboard'));
     };
@@ -61,7 +62,6 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         return this.hexagons[index];
     };
     
-
     //TODO
     HexBoard.prototype.transitionTo = function(object,oldHex,newHex){
         //remove the object from the hex it is currently attached to (parent)
