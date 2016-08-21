@@ -1,32 +1,47 @@
 * Hex Based Phaser Game
 ** General Design
-GameState->HexBoard->Rooms->Hexagon
+GameState->HexBoard->Hexagon
+The Hexboard serves as the root of everything, 
+being the only thing connected to the game.world.
 ** GameStates
 *** Boot
 *** PreLoadAssets
+uses data/setup/assets.json
 *** GameState
+uses data/setup/scene1.json
 ** Component Objects
 *** Actor
 *** Door
+*** HexBoard
 *** Hexagon
 *** Item
 *** Room
+deprecated
 *** SpeechBubble
-*** HexBoard
 ** Utils
+*** HexLib
+Based on red blob games page
+**** Cube
 ** TODOs
+*** TODO Add player to the first *existing* hexagon
 *** DONE make hexagons groups with a sprite inside, instead of just a sprite
 **** DONE update constructor
 **** DONE add sprite
 **** DONE set sprite anchor instead of group anchor
+*** TODO Prepare walls and hexagons
+**** TODO Add sub-groups to hexagon
+**** TODO write update code of hexagon to run collisions
 *** TODO add walls to each hexagon
 **** DONE calculate wall and door existence
+**** TODO calculate rotations of doors and walls
 **** TODO calculate entry positions for doors
      also make sure to put cool downs on doors? based on distance from door
 **** TODO add wall and door physical sprites
 ***** TODO Create Door, Wall classes
 **** TODO write collisions to call hexboard.transitionTo
 *** TODO hexboard.transitionTo
+    transitionTo will take the agent out of the hexagon, into the linked hexagon
 **** TODO flip flop door active status
 *** TODO let hexagons deal with agents/objects being added to them
     in a custom collision handler?
+*** TODO write addAgent to hexagon
