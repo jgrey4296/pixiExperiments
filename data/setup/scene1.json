@@ -1,11 +1,25 @@
 {
-    "FPS" : 20,
+    "FPS" : 30,
     "BOARD_SIZE" : [25,25],
     "MAZE_SIZE" : 8,
     "HEX_TEXTURE_FILL": "0xF123A1",
     "HEX_TEXTURE_ALPHA": 0.3,
     "HEX_TEXTURE_STROKE": "0xFFFFFF",
+    "HEX_DEFAULT_RADIUS" : 200,
     "HEX_RADIUS" : 500,
+    "GRAVITY" : {
+        "x" : 0,
+        "y" : 0
+    },
+    "actor" : {
+        "x" : 200,
+        "y" : 200,
+        "key" : "pig",
+        "frame" : 5,
+        "name" : "actor",
+        "facing" : "right",
+        "controllable" : true
+    },
     "rooms" : [
         {
             "id" : 0,
