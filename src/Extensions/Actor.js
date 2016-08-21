@@ -16,19 +16,38 @@ define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,P
         @augments Phaser.Sprite
      */
     var Actor = function(game,x,y,key,frame,name,facing,controllable,width,height){
-        console.log("Creating:",name);
-        Phaser.Sprite.call(this,game,x,y,key,frame);
-        this.name = name;
-        this.defaultTexture = key;
-        this.currentTexture = key;
+        if(y === undefined){
+            //passed in an object to x:
+            let details = x;
+            console.log("Creating:",details.name,details);
+            Phaser.Sprite.call(this,game,details.x,
+                               details.y, details.key,details.frame);
+            this.name = details.name;
+            this.defaultTexture = details.key;
+            this.currentTexture = details.key;
+            this.facing = details.facing;
+            this.controllable = details.controllable;
+            this.width = details.width || this.width;
+            this.height = details.height || this.height;
+            
+        }else{
+            //passed in normal parameters:
+            console.log('Creating:',name);
+            Phaser.Sprite.call(this,game,x,y,key,frame);
+            this.name = name;
+            this.defaultTexture = key;
+            this.currentTexture = key;
+            this.facing = facing || 'right';
+            this.controllable = controllable || false;
+            this.width = width || this.width;
+            this.height = height || this.height;
+        }
+
+        //General Elements
         this.inventory = {};
-        this.facing = facing || 'right';
-        this.controllable = controllable || false;
         this.anchor.setTo(.5,1);
-        this.width = width || this.width;
-        this.height = height || this.height;
         this.jumpTimer = 0;
-        this.defaultStrength = 250;
+        this.defaultStrength = 450;
         this.isInactive = false;
         this.roomIndices = [0,0];
         
@@ -42,8 +61,11 @@ define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,P
 
         /** Minimum Magnitude */
         this.minMagnitude = 100;
-        /** Magnitude Dropbox */
+        /** Magnitude Drop / friction */
         this.magDrop = 0.5;
+
+        //Body details:
+        this.game.physics.enable(this);
         
     };
     Actor.prototype = Object.create(Phaser.Sprite.prototype);
@@ -139,7 +161,6 @@ define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,P
         @method
     */
     Actor.prototype.update = function(externalInformation){
-        //console.log("Updating Actor:",this.name);
         //Generally trend towards 0
         this.body.velocity.x *= this.magDrop;
         this.body.velocity.y *= this.magDrop;
