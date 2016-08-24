@@ -31,12 +31,15 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
             this.game.cache.addRenderTexture(util.hexTexture(this.radius),h_tex);
             h.destroy();            
         }
+
+        //offset the position, otherwise the centre of the first hex is 0,0
+        //this.position = new Phaser.Point(this.radius,this.hexHeight);
         
         //The array of stored Hexagons.
         //ie: accessed by INDEX
         this.hexagons = Array(this.boardSize[0] * this.boardSize[1]).fill(0).map((d,i)=>{
             //game,index,offset,cube,name,radius,fillColour,strokeColour
-            let newHex = new Hexagon(this.game,'hexCell',this.radius,i);
+            let newHex = new Hexagon(this.game,`hexCell_${i}`,this.radius,i);
             this.add(newHex);
             return newHex;
         });
@@ -44,7 +47,7 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         //Remove a random number of cells
         _.sampleSize(this.hexagons,200).forEach(d=>{
             d.active = false;
-            d.destroy()
+            d.parent.remove(d);
         });//this.removeChild(d));
 
         //TODO: add walls:

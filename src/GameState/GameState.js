@@ -54,50 +54,53 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         this.keys['z'] = this.game.input.keyboard.addKey(Phaser.KeyCode.Z);
         this.keys['x'] = this.game.input.keyboard.addKey(Phaser.KeyCode.X);
         this.keys['space'] = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-        
+
+        //generate a default hex texture and cache it:
+        //then cleanup the sprite
+        let h = new HexTexture(this.game,scene.HEX_DEFAULT_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
+        h_tex = h.generateTexture();
+        h.destroy();
+        this.game.cache.addRenderTexture(util.hexTexture(scene.HEX_DEFAULT_TEXTURE),h_tex);
+                
         //setup physics:
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.game.physics.arcade.gravity.x = this.gravityAmnt.x;
         this.game.physics.arcade.gravity.y = this.gravityAmnt.y;
-        this.physics.arcade.setBounds(0,0,(scene.MAZE_SIZE+1)*this.screenSize[0],(scene.MAZE_SIZE+1)*this.screenSize[1]);        
-        
+
+        let bounds_x = (scene.BOARD_SIZE[0] + 1) * scene.HEX_RADIUS,
+            bounds_y = (scene.BOARD_SIZE[1] + 1) * scene.HEX_RADIUS,
+            offset_x = -scene.HEX_RADIUS,
+            offset_y = -scene.HEX_RADIUS;
         //setup the world bounds:
-        this.game.world.setBounds(-1000,-1000,2000,2000);
+        //this.physics.arcade.setBounds(0,0,bounds_x,bounds_y);    
+        this.game.world.resize(bounds_x,bounds_y);
+
+        //create the hexboard, add it to the world
+        this.hexBoard = new HexBoard(this.game,scene.BOARD_SIZE,scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
+        this.world.add(this.hexBoard);
         
+        //Create the player, place it at the position of the first hex
+        this.controllableActor = new Actor(this.game,scene.actor);
+        //let selected = _.sample(_.filter(this.hexBoard.hexagons,d=>d.active));
+        let selected = _.sample(_.filter(this.hexBoard.hexagons,d=>d.active));
+        selected.addToSubGroup('actors',this.controllableActor);
+        
+        //Set the camera to the first room:
+        let cameraSize = [this.hexBoard.hexHeight,this.hexBoard.hexHeight];
+        //this.game.camera.setSize(cameraSize[0],cameraSize[1] * 1.25);
+        this.game.camera.bounds = null;
+        //this.game.camera.setBoundsToWorld();
+        //this.game.camera.setSize(cameraSize,cameraSize);
+        //this.game.camera.focusOn(this.hexBoard.hexagons[0]);
+        this.game.camera.follow(this.controllableActor);
+
         /*
           modify the world update function to ignore inactive items:
         */
         //this.game.world.update = inactiveAwareUpdate;
-
         
-        //generate a default hex texture and cache it:
-        //then cleanup the sprite
-        let h = new HexTexture(this.game,scene.HEX_DEFAULT_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
-            h_tex = h.generateTexture();
-        h.destroy();
-        this.game.cache.addRenderTexture(util.hexTexture(scene.HEX_DEFAULT_TEXTURE),h_tex);
+        console.log(this.controllableActor,this.game.camera);
         
-        //create the hexboard, add it to the world
-        this.hexBoard = new HexBoard(this.game,[scene.BOARD_SIZE[0],scene.BOARD_SIZE[1]],scene.HEX_RADIUS,parseInt(scene.HEX_TEXTURE_FILL),scene.HEX_TEXTURE_ALPHA,parseInt(scene.HEX_TEXTURE_STROKE));
-        this.world.add(this.hexBoard);
-        this.hexBoard.x = 0;
-        this.hexBoard.y = 0;
-        
-        //Create the player, place it at the position of the first hex
-        this.controllableActor = new Actor(this.game,scene.actor);
-
-        let existing = _.filter(this.hexBoard.hexagons,d=>d.active);
-        //_.sample(existing).addToSubGroup('actors',this.controllableActor);
-        //this.hexBoard.hexagons[4].addToSubGroup('actors',this.controllableActor);
-        this.hexBoard.hexagons[4].add(this.controllableActor);
-        
-        //Set the camera to the first room:
-        let cameraSize = scene.HEX_RADIUS;
-        this.game.camera.bounds = null;
-        //this.game.camera.setSize(cameraSize,cameraSize);
-        //this.game.camera.focusOn(sprite);
-        this.game.camera.follow(this.controllableActor,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
-
     };
 
     /**
@@ -134,7 +137,9 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
 
         //UPDATES
         let currentRoom = this.controllableActor.parent;
-        currentRoom.update();        
+        if(currentRoom !== null){
+            currentRoom.update();
+        }
     };
 
     /**
@@ -143,7 +148,7 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
      */
     GameState.prototype.render = function(){
         //this.game.debug.cameraInfo(this.game.camera,500,32);
-        //this.game.debug.body(this.controllableActor);
+        //this.game.debug.bodyInfo(this.controllableActor,100,100);
 
     };
 

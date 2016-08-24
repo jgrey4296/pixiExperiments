@@ -15,22 +15,23 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         let position = HexLib.indexToPosition(index,radius),
             texture = game.cache.getRenderTexture(util.hexTexture(radius)).texture;
         //Create the sprite, with the position and texture as appropriate
-        Phaser.Group.call(this,game);
-        this.x = position.x;
-        this.y = position.y;
+        Phaser.Group.call(this,game,null,name);
+        this.position = new Phaser.Point(position.x,position.y);
+        // this.x = Math.floor(position.x);
+        // this.y = Math.floor(position.y);
         this.index = index;
         this.offset = HexLib.indexToOffset(index);
         this.cube = HexLib.offsetToCube(this.offset);
         this.radius = radius;
-        this.name = name;
-        let hexSprite = new Phaser.Sprite(game,0,0,texture);
-        hexSprite.anchor.set(0.5);
-        this.add(hexSprite);
         this.neighbours = [null,null,null,null,null,null];
-
         this.active = true;
         //The various elements of the hexagon. actors, walls, doors etc
         this.subGroups = {};
+
+        let hexSprite = new Phaser.Sprite(game,0,0,texture);
+        hexSprite.anchor.set(0.5);
+        //this.add(hexSprite);
+        this.addToSubGroup('sprites',hexSprite);
         
     };
     Hexagon.prototype = Object.create(Phaser.Group.prototype);
@@ -69,19 +70,17 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
             curr.update();
         }        
     };
-
+    
     Hexagon.prototype.addSubGroup = function(name){
         if(this.subGroups[name] === undefined){
-            this.subGroups[name] = new Phaser.Group(this.game,0,0);
-            this.add(this.subGroups[name]);
+            this.subGroups[name] = new Phaser.Group(this.game,this,name);
         }
+        return this.subGroups[name];
     };
 
     Hexagon.prototype.addToSubGroup = function(name,obj){
-        if(this.subGroups[name] === undefined){
-            this.addSubGroup(name);
-        }
-        this.subGroups[name].add(obj);
+        let target = this.addSubGroup(name);
+        target.add(obj);
     };
     
     return Hexagon;
