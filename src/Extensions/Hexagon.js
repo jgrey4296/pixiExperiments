@@ -73,6 +73,7 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
     Hexagon.prototype.addSubGroup = function(name){
         if(this.subGroups[name] === undefined){
             this.subGroups[name] = new Phaser.Group(this.game,0,0);
+            this.add(this.subGroups[name]);
         }
     };
 

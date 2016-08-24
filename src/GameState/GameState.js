@@ -85,15 +85,19 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         
         //Create the player, place it at the position of the first hex
         this.controllableActor = new Actor(this.game,scene.actor);
-        this.hexBoard.hexagons[0].addToSubGroup('actors',this.controllableActor);
 
+        let existing = _.filter(this.hexBoard.hexagons,d=>d.active);
+        //_.sample(existing).addToSubGroup('actors',this.controllableActor);
+        //this.hexBoard.hexagons[4].addToSubGroup('actors',this.controllableActor);
+        this.hexBoard.hexagons[4].add(this.controllableActor);
+        
         //Set the camera to the first room:
         let cameraSize = scene.HEX_RADIUS;
         this.game.camera.bounds = null;
         //this.game.camera.setSize(cameraSize,cameraSize);
         //this.game.camera.focusOn(sprite);
         this.game.camera.follow(this.controllableActor,Phaser.Camera.FOLLOW_LOCKON,0.1,0.1);
-        
+
     };
 
     /**
