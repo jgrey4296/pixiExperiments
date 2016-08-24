@@ -1,0 +1,9 @@
+CACHE MANIFEST
+#Author: John Grey Tue Aug 23 20:56:48 PDT 2016
+/index.html
+/libs/phaser.min.js
+/libs/phaser.js
+/libs/require.js
+/libs/lodash.js
+NETWORK:
+*
