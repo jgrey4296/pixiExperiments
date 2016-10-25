@@ -65,7 +65,7 @@ define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,P
         this.magDrop = 0.5;
 
         //Body details:
-        this.game.physics.enable(this);
+        //this.game.physics.enable(this);
         
     };
     Actor.prototype = Object.create(Phaser.Sprite.prototype);
@@ -121,53 +121,58 @@ define(['lodash','./SpeechBubble','phaser','src/util'],function(_,SpeechBubble,P
        @method
     */
     Actor.prototype.move = function(direction,strength){
-        if(direction === undefined){
-            this.body.velocity.x *= 0.8;
-        }
-        if(strength === undefined) strength = this.defaultStrength;
-        
-        if(direction === 'down'){
-            this.body.velocity.y += strength;
-        }else if(direction === 'up'){// &&  this.game.time.now > this.jumpTimer){
-            this.body.velocity.y -= strength;
-            //this.jumpTimer = this.game.time.now + 750;
-        }else if(direction === 'right'){
-            this.body.velocity.x += strength;
-            this.setupAnimation('walk',this.registeredAnimations['walk']);
-            if(this.facing === 'left'){
-                this.flip();
-            }
-        }else if(direction === 'left'){
-            this.body.velocity.x -= strength;
-            this.setupAnimation('walk',this.registeredAnimations['walk']);
-            if(this.facing === 'right'){
-                this.flip();
-            }
-        }
 
-        if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
-            this.animations.stop();
-            this.body.velocity.x = 0;
-            //this.updateTexture(this.defaultTexture);
-        }else{
-            if(this.registeredAnimations['walk'] !== undefined){
-                this.animations.play('walk',this.registeredAnimations['walk'][1]);
-            }
-        }
-        
     };
+
+    
+    // Actor.prototype.move = function(direction,strength){
+    //     if(direction === undefined){
+    //         this.body.velocity.x *= 0.8;
+    //     }
+    //     if(strength === undefined) strength = this.defaultStrength;
+        
+    //     if(direction === 'down'){
+    //         this.body.velocity.y += strength;
+    //     }else if(direction === 'up'){// &&  this.game.time.now > this.jumpTimer){
+    //         this.body.velocity.y -= strength;
+    //         //this.jumpTimer = this.game.time.now + 750;
+    //     }else if(direction === 'right'){
+    //         this.body.velocity.x += strength;
+    //         this.setupAnimation('walk',this.registeredAnimations['walk']);
+    //         if(this.facing === 'left'){
+    //             this.flip();
+    //         }
+    //     }else if(direction === 'left'){
+    //         this.body.velocity.x -= strength;
+    //         this.setupAnimation('walk',this.registeredAnimations['walk']);
+    //         if(this.facing === 'right'){
+    //             this.flip();
+    //         }
+    //     }
+
+    //     if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
+    //         this.animations.stop();
+    //         this.body.velocity.x = 0;
+    //         //this.updateTexture(this.defaultTexture);
+    //     }else{
+    //         if(this.registeredAnimations['walk'] !== undefined){
+    //             this.animations.play('walk',this.registeredAnimations['walk'][1]);
+    //         }
+    //     }
+        
+    // };
 
     /** update/AI
         @method
     */
     Actor.prototype.update = function(externalInformation){
         //Generally trend towards 0
-        this.body.velocity.x *= this.magDrop;
-        this.body.velocity.y *= this.magDrop;
+        // this.body.velocity.x *= this.magDrop;
+        // this.body.velocity.y *= this.magDrop;
 
-        if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
-            this.body.velocity.setMagnitude(0);
-        }
+        // if(this.body.velocity.getMagnitudeSq() < this.minMagnitude){
+        //     this.body.velocity.setMagnitude(0);
+        // }
                   
         //     //console.log("Updating: ",this.name);
         //     //var moveDir = _.sample(['left','right'],1);
