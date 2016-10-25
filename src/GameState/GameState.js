@@ -10,7 +10,7 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
      */
     var GameState = function(game){
         /** The physics type of the game */
-        this.physicsType = Phaser.Physics.ARCADE;
+        //this.physicsType = Phaser.Physics.ARCADE;
         /** A Reference to the game */
         this.game = game;
         /** The amount of gravity */
@@ -49,8 +49,8 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
      */
     GameState.prototype.create = function(){
         this.game.time.desiredFps = this.fps;
-        this.cursors = this.game.input.keyboard.createCursorKeys();
         //Register specific keys:
+        this.cursors = this.game.input.keyboard.createCursorKeys();
         this.keys['z'] = this.game.input.keyboard.addKey(Phaser.KeyCode.Z);
         this.keys['x'] = this.game.input.keyboard.addKey(Phaser.KeyCode.X);
         this.keys['space'] = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
@@ -61,18 +61,19 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         h_tex = h.generateTexture();
         h.destroy();
         this.game.cache.addRenderTexture(util.hexTexture(scene.HEX_DEFAULT_TEXTURE),h_tex);
-                
-        //setup physics:
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.physics.arcade.gravity.x = this.gravityAmnt.x;
-        this.game.physics.arcade.gravity.y = this.gravityAmnt.y;
 
         let bounds_x = (scene.BOARD_SIZE[0] + 1) * scene.HEX_RADIUS,
             bounds_y = (scene.BOARD_SIZE[1] + 1) * scene.HEX_RADIUS,
             offset_x = -scene.HEX_RADIUS,
             offset_y = -scene.HEX_RADIUS;
-        //setup the world bounds:
+        
+        //setup physics:
+        //this.game.physics.startSystem(this.physicsType);
+        //this.game.physics.arcade.gravity.x = this.gravityAmnt.x;
+        //this.game.physics.arcade.gravity.y = this.gravityAmnt.y;
         //this.physics.arcade.setBounds(0,0,bounds_x,bounds_y);    
+        
+        //setup the world bounds:
         this.game.world.resize(bounds_x,bounds_y);
 
         //create the hexboard, add it to the world
@@ -82,8 +83,10 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
         //Create the player, place it at the position of the first hex
         this.controllableActor = new Actor(this.game,scene.actor);
         //let selected = _.sample(_.filter(this.hexBoard.hexagons,d=>d.active));
-        let selected = _.sample(_.filter(this.hexBoard.hexagons,d=>d.active));
+        //let selected = _.sample(_.filter(this.hexBoard.hexagons,d=>d.active));
+        let selected = this.hexBoard.hexagons[0];
         selected.addToSubGroup('actors',this.controllableActor);
+        this.controllableActor.parent.parent.active = true;
         
         //Set the camera to the first room:
         let cameraSize = [this.hexBoard.hexHeight,this.hexBoard.hexHeight];
@@ -98,9 +101,7 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
           modify the world update function to ignore inactive items:
         */
         //this.game.world.update = inactiveAwareUpdate;
-        
-        console.log(this.controllableActor,this.game.camera);
-        
+         
     };
 
     /**
@@ -149,6 +150,7 @@ define(['json!data/setup/scene1.json','lodash','../Extensions/SpeechBubble','../
     GameState.prototype.render = function(){
         //this.game.debug.cameraInfo(this.game.camera,500,32);
         //this.game.debug.bodyInfo(this.controllableActor,100,100);
+        this.game.debug.bodyInfo(this.hexBoard.hexagons[0].subGroups.walls.children[0],100,100);
 
     };
 
