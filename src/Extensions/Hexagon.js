@@ -1,5 +1,5 @@
 /* jshint esversion : 6 */
-define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,Phaser){
+define(['lodash','../HexLib/HexLib','../util','./Wall','phaser'],function(_,HexLib,util,Wall,Phaser){
     
     /**
        A Simple Hexagon constructor
@@ -24,7 +24,7 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         this.cube = HexLib.offsetToCube(this.offset);
         this.radius = radius;
         this.neighbours = [null,null,null,null,null,null];
-        this.active = true;
+        this.active = false;
         //The various elements of the hexagon. actors, walls, doors etc
         this.subGroups = {};
 
@@ -32,6 +32,10 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         hexSprite.anchor.set(0.5);
         //this.add(hexSprite);
         this.addToSubGroup('sprites',hexSprite);
+
+        this.buildWall(4);
+        this.buildWall(1);
+        //this.buildWall(2);
         
     };
     Hexagon.prototype = Object.create(Phaser.Group.prototype);
@@ -60,6 +64,7 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
     };
 
     Hexagon.prototype.update = function(){
+        if(!this.active) { return; }
         let i = this.children.length,
             curr;
         while(i--){
@@ -68,7 +73,7 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
                 continue;
             }
             curr.update();
-        }        
+        }
     };
     
     Hexagon.prototype.addSubGroup = function(name){
@@ -82,6 +87,15 @@ define(['lodash','../HexLib/HexLib','../util','phaser'],function(_,HexLib,util,P
         let target = this.addSubGroup(name);
         target.add(obj);
     };
-    
+
+    Hexagon.prototype.buildWall = function(i){
+        let distance = Math.sin(((2 * Math.PI) / 6) * i) * this.radius,
+            wall = new Wall(this.game,distance,this.radius*-0.5,10,this.radius,'simpleTile',null,0x33FF11);
+        this.addToSubGroup('walls',wall);
+
+
+    };
+
+
     return Hexagon;
 });
