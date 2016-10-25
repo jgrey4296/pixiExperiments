@@ -81,24 +81,20 @@ define(['lodash','./Cube'],function(_,Cube){
        invalid nodes === null
      */
     HexUtil.neighbour_vector = function(index){
-        let positionsLength = HexUtil.positions.length,
-            rows = BOARD_X,
+        let rows = BOARD_X,
             columns = BOARD_Y,
-            cube = !isOffset(index) ? HexUtil.indexToCube(index) : HexUtil.offsetToCube(index),
+            cube = isOffset(index) ? HexUtil.offsetToCube(index) : HexUtil.indexToCube(index),
             neighbours = cube.neighbours(),
             //get offset locations
             n_offset = neighbours.map(d=>d.toOffset()),
-            inBounds = n_offset.map(d=>{ if(HexUtil.inBounds(d)){ null; } else{ d; } }),
-            toIndices = inBounds.map(d=>{ if(d !== null){HexUtil.offsetToIndex(d)} else { null; }});
+            inBounds = n_offset.map(d=>{ if(!HexUtil.inBounds(d)){ return null; } else{ return d; } }),
+            toIndices = inBounds.map(d=>{ if(d !== null){return HexUtil.offsetToIndex(d)} else { return null; }});
 
-            //filter by out of bounds
-            //n_indices_filtered = n_indices.filter(d=> d >= 0 && d < positionsLength);
-            
         return toIndices;
     };
 
     /**
-       neighbour vector : Get up to the 6 neighbours of a node,
+       neighbour vector : Get *up to* the 6 neighbours of a node,
        filters invalid neighbours
        @param index The central node, as an index
        @returns {Array} Array of indices of neighbours
@@ -106,10 +102,6 @@ define(['lodash','./Cube'],function(_,Cube){
     HexUtil.neighbours = function(index){
         let vector = this.neighbour_vector(index);
         return vector.filter(d=>d !== null)
-    };
-    
-    HexUtil.neighbourCells = function(index){
-        return HexUtil.neighbours(index).map(d=>HexUtil.positions[d]);
     };
     
     /**
@@ -134,8 +126,8 @@ define(['lodash','./Cube'],function(_,Cube){
     /**
        Calculate the cost of a tile
      */
-    HexUtil.costOf = function(tileIndex){
-        let tile = HexUtil.positions[tileIndex];
+    HexUtil.costOf = function(tileIndex,hexagons){
+        let tile = hexagons[tileIndex];
         if(tile === undefined || tile.blocked){
             return Infinity;
         }
@@ -152,8 +144,8 @@ define(['lodash','./Cube'],function(_,Cube){
        @param b as index
        @returns {Array} of indices
      */
-    HexUtil.pathFind = function(source,target){
-        if(HexUtil.positions[source] === undefined || HexUtil.positions[target] === undefined){
+    HexUtil.pathFind = function(source,target,board){
+        if(board[source] === undefined || board[target] === undefined){
             throw new Error('invalid source or target');
         }
         let hRef = HexUtil,
@@ -164,7 +156,7 @@ define(['lodash','./Cube'],function(_,Cube){
             current = null,
             //calculate cost and add to potential nodes, update frontier
             reduceFunc = function(m,v){
-                let newCost = costs[current] + hRef.costOf(v),
+                let newCost = costs[current] + hRef.costOf(v,board),
                     distance = hRef.distance(v,target);
                 if(m[v] === undefined || newCost < costs[v] ){
                     frontier.insert(v,newCost + distance);
@@ -176,7 +168,7 @@ define(['lodash','./Cube'],function(_,Cube){
             },
             //filter out invalid potential neighbours
             filterFunc = function(d){
-                let position = hRef.positions[d];
+                let position = board[d];
                 if(position !== undefined && position.blocked !== true){
                     return true;
                 }else{
@@ -218,11 +210,11 @@ define(['lodash','./Cube'],function(_,Cube){
     };
 
     //Given a centre and radius, get an area of cells
-    HexUtil.getRing = function(i,radius){
+    HexUtil.getRing = function(i,radius,board){
         let centre = HexUtil.indexToCube(i),
             subCentre = centre.subtract(radius),
             addCentre = centre.add(radius),
-            cubes = HexUtil.positions.map((d,i)=>HexUtil.indexToCube(i)),
+            cubes = board.map((d,i)=>HexUtil.indexToCube(i)),
             xBounded = cubes.filter(d=>subCentre.x < d.x && d.x < addCentre.x),
             yBounded = xBounded.filter(d=>subCentre.y < d.y && d.y < addCentre.y),
             zBounded = yBounded.filter(d=>subCentre.z < d.z && d.z < addCentre.z);
@@ -260,11 +252,12 @@ define(['lodash','./Cube'],function(_,Cube){
     //Check an offset/cube is within bounds of the board,
     //internally use offset
     HexUtil.inBounds = function(cube){
+        if(cube === null) { return false; }
         let offset = cube;
         if(cube instanceof Cube){
             offset = cube.toOffset();
         }
-        let inBounds = !(offset.q < 0 || offset.q >= HexUtil.columns || offset.r < 0 || offset.r >= HexUtil.rows);
+        let inBounds = !(offset.q < 0 || offset.q >= BOARD_X || offset.r < 0 || offset.r >= BOARD_Y);
         return inBounds;
     };
 
