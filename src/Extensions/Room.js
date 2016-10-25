@@ -8,6 +8,12 @@ define(['lodash','./Actor','./Item','./Door','phaser'],function(_,Actor,Item,Doo
        @param description
        @alias Room
        @augments Phaser.Group
+
+
+       DEPRECATED
+
+
+
      */
     var Room = function(game,description,position,size,indices){
         if(position === undefined) { position = [0,0]; }
