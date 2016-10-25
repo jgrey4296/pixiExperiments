@@ -1,6 +1,6 @@
 {
     "FPS" : 30,
-    "BOARD_SIZE" : [25,25],
+    "BOARD_SIZE" : [5,5],
     "HEX_TEXTURE_FILL": "0xF123A1",
     "HEX_TEXTURE_ALPHA": 0.3,
     "HEX_TEXTURE_STROKE": "0xFFFFFF",
