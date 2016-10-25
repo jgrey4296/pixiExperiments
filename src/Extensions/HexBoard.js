@@ -9,6 +9,7 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
     */
     let HexBoard = function(game,boardSize,standardRadius,fill,fillAlpha,stroke){
         util.debug('start',()=>console.log('Creating Hexboard'));
+        console.log('HexBoard Size:',boardSize);
         //defaults:
         if(fill === undefined){ fill = 0xFF00FF; }
         if(fillAlpha === undefined) { fillAlpha = 0x0;}
@@ -45,15 +46,19 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         });
 
         //Remove a random number of cells
-        _.sampleSize(this.hexagons,200).forEach(d=>{
+        let proportion = Math.floor(this.hexagons.length * 0.3);
+        _.sampleSize(this.hexagons,proportion).forEach(d=>{
+            //always keep position 0,0:
+            if(d.index === 0){ return; }
+            //else deactivate
             d.active = false;
             d.parent.remove(d);
-        });//this.removeChild(d));
+        });
 
         //TODO: add walls:
-        
+        this.calculateDoorsAndWalls();
 
-        console.log(this.hexagons);
+        
         util.debug('hexs',()=>console.log(this.hexagons.map(d=>[d.x,d.y])));
         util.debug('start',()=>console.log('Finished Creating Hexboard'));
     };
@@ -71,7 +76,7 @@ define(['lodash','util','./Hexagon','./HexTexture','../HexLib/HexLib','phaser'],
         //and then add it to the new hex
     };
 
-    HexBoard.calculateDoorsAndWalls = function(){
+    HexBoard.prototype.calculateDoorsAndWalls = function(){
         //for each hexagon:
         for(var i = 0; i < this.hexagons.length; i++){
             let neighbours = HexUtil.neighbour_vector(i);
